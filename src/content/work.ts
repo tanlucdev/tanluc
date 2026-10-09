@@ -13,7 +13,7 @@ export interface CaseStudy {
 export const WORK: CaseStudy[] = [
   {
     slug: "wayfinder",
-    title: "Wayfinder",
+    title: "CinematicAI",
     client: "Placeholder Fintech Co.",
     year: "2025",
     role: "Lead Product Designer",
@@ -37,7 +37,7 @@ export const WORK: CaseStudy[] = [
   },
   {
     slug: "atlas-design-system",
-    title: "Atlas Design System",
+    title: "CafeMaps",
     client: "Placeholder SaaS Inc.",
     year: "2024",
     role: "Design Systems Lead",
@@ -52,7 +52,7 @@ export const WORK: CaseStudy[] = [
   },
   {
     slug: "night-shift",
-    title: "Night Shift",
+    title: "Study Stream",
     client: "Placeholder Health Co.",
     year: "2023",
     role: "Senior Product Designer",
@@ -63,21 +63,6 @@ export const WORK: CaseStudy[] = [
       { heading: "The problem", body: "Placeholder copy for the clinical context." },
       { heading: "The approach", body: "Placeholder copy for shadowing, prototyping, night-mode design." },
       { heading: "The outcome", body: "Placeholder copy for error-rate reduction and rollout." },
-    ],
-  },
-  {
-    slug: "corner-store",
-    title: "Corner Store",
-    client: "Side project",
-    year: "2023",
-    role: "Designer & builder",
-    summary:
-      "A tiny marketplace concept exploring what neighborhood commerce feels like when it is designed with warmth.",
-    cover: "linear-gradient(135deg, #e2574c 0%, #8e2c24 100%)",
-    sections: [
-      { heading: "The idea", body: "Placeholder copy for the concept." },
-      { heading: "The craft", body: "Placeholder copy for the visual language and prototypes." },
-      { heading: "Where it went", body: "Placeholder copy for the ending or the next chapter." },
     ],
   },
 ];
