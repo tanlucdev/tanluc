@@ -18,16 +18,17 @@ export interface Photo {
   title: string;
   place: string;
   cover: string;
+  tags?: string[];
   tall?: boolean;
 }
 
 export const PHOTOS: Photo[] = [
-  { title: "Fog line", place: "Marin Headlands", cover: "linear-gradient(180deg, #b9c3bd, #5c6b63)", tall: true },
-  { title: "Descent", place: "Mt. Tam", cover: "linear-gradient(180deg, #e8b93c, #b0761c)" },
-  { title: "Blue hour", place: "Embarcadero", cover: "linear-gradient(180deg, #3568c4, #101d3c)" },
-  { title: "Paceline", place: "Paradise Loop", cover: "linear-gradient(180deg, #2fa872, #133f2b)", tall: true },
-  { title: "Corner shop", place: "Tokyo", cover: "linear-gradient(180deg, #e2574c, #5e1a14)" },
-  { title: "Switchbacks", place: "Alpe d'Huez", cover: "linear-gradient(180deg, #8b8b8b, #2e2e2e)" },
-  { title: "Golden flat", place: "Ocean Beach", cover: "linear-gradient(180deg, #f0c987, #9c6b2f)", tall: true },
-  { title: "Rain race", place: "Portland", cover: "linear-gradient(180deg, #7a8c74, #2f3a2c)" },
+  { title: "Fog line", place: "Marin Headlands", cover: "linear-gradient(180deg, #b9c3bd, #5c6b63)", tags: ["fog", "coast"], tall: true },
+  { title: "Descent", place: "Mt. Tam", cover: "linear-gradient(180deg, #e8b93c, #b0761c)", tags: ["bike", "bikes", "cycling"] },
+  { title: "Blue hour", place: "Embarcadero", cover: "linear-gradient(180deg, #3568c4, #101d3c)", tags: ["city", "night"] },
+  { title: "Paceline", place: "Paradise Loop", cover: "linear-gradient(180deg, #2fa872, #133f2b)", tags: ["bikes", "cycling"], tall: true },
+  { title: "Corner shop", place: "Tokyo", cover: "linear-gradient(180deg, #e2574c, #5e1a14)", tags: ["street", "travel"] },
+  { title: "Switchbacks", place: "Alpe d'Huez", cover: "linear-gradient(180deg, #8b8b8b, #2e2e2e)", tags: ["bike", "bikes", "mountain"] },
+  { title: "Golden flat", place: "Ocean Beach", cover: "linear-gradient(180deg, #f0c987, #9c6b2f)", tags: ["bike", "bikes", "coast"], tall: true },
+  { title: "Rain race", place: "Portland", cover: "linear-gradient(180deg, #7a8c74, #2f3a2c)", tags: ["bikes", "cycling", "rain"] },
 ];
