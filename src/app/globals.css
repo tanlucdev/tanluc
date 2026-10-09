@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f4f3ef;
+  --ink: #1c1b18;
+  --ink-soft: #6f6d66;
+  --grid-line: rgba(28, 27, 24, 0.08);
+  --accent: #2fa872;
+  --cell: 48px;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-newsreader);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+}
+
+/* ---- hero flip grid ---- */
+.flip-cell {
+  perspective: 600px;
+}
+
+.flip-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.flip-inner[data-flipped="true"] {
+  transform: rotateY(180deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+@keyframes pulse-hint {
+  0%,
+  100% {
+    background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  }
+}
+
+.hint-cell {
+  animation: pulse-hint 1.6s ease-in-out infinite;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .flip-inner {
+    transition: none;
+  }
+  .hint-cell {
+    animation: none;
+    background-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+}
