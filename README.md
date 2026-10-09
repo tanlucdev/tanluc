@@ -1,4 +1,4 @@
-# Neel Saswade — Portfolio
+# Tan Luc — Portfolio
 
 A portfolio for a senior product designer, built on a graph-paper grid. Next.js (App Router) + Tailwind.
 
@@ -20,7 +20,7 @@ npm run dev
 - Play projects and photos: `src/content/misc.ts`
 - Grid reveal chain (what each discovery shows): `src/components/hero/reveals.ts`
 
-Placeholder covers are CSS gradients; replace `cover` values with image URLs and swap the `div`s for `next/image` when real assets are ready.
+Placeholder covers are CSS gradients. Put About's recent-life images in `public/images/about/recents/`; files there are available at `/images/about/recents/<filename>`. Then replace each `cover` value in `src/components/about/RecentGallery.tsx` with `url("/images/about/recents/<filename>")`.
 
 ## Deploying
 

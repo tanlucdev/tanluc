@@ -4,31 +4,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
-  { href: "/", label: "Home" },
   { href: "/work", label: "Work" },
-  { href: "/play", label: "Play" },
-  { href: "/photography", label: "Photography" },
+  { href: "/photography", label: "Photo" },
   { href: "/about", label: "About" },
 ];
 
 export function Nav() {
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-30 border-b border-ink/10 bg-paper/85 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="font-serif text-lg italic">
-          Neel Saswade
+    <header className="relative mx-auto flex w-[calc(100%-32px)] items-baseline justify-between gap-4 pt-4 sm:w-[calc(100%-128px)] sm:justify-start sm:gap-6 sm:pt-[30px]">
+      <nav className="contents">
+        <Link href="/" className="font-sans text-sm leading-[1.2] tracking-[-0.02em] sm:text-[clamp(15px,1.1vw,18px)] sm:leading-[1.05] sm:tracking-[-0.035em]">
+          Tan Luc
         </Link>
-        <ul className="flex flex-wrap gap-1">
+        <ul className="flex gap-[14px] text-sm leading-[1.2] tracking-[-0.02em] text-[#8f8f8f] sm:gap-6 sm:text-[clamp(15px,1.1vw,18px)] sm:leading-[1.05] sm:tracking-[-0.035em]">
           {LINKS.map((l) => {
             const active =
-              l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
+              pathname.startsWith(l.href);
             return (
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className={`rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest transition-colors ${
-                    active ? "bg-ink text-paper" : "text-ink-soft hover:text-ink"
+                  className={`transition-colors ${
+                    active ? "text-ink" : "hover:text-ink"
                   }`}
                 >
                   {l.label}

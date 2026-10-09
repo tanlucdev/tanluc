@@ -9,7 +9,7 @@ export default function Home() {
 
       <section id="work" className="mx-auto max-w-6xl px-4 py-20">
         <div className="mb-10 flex items-end justify-between">
-          <h2 className="font-serif text-4xl italic">Selected work</h2>
+          <h2 className="font-serif text-4xl italic">Selected projects</h2>
           <Link
             href="/work"
             className="font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink"
@@ -44,9 +44,9 @@ export default function Home() {
 
       <footer className="border-t border-ink/10 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 text-center">
-          <p className="font-serif italic">Neel Saswade</p>
+          <p className="font-serif italic">Tan Luc</p>
           <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
-            Designed on graph paper
+            Software engineer 
           </p>
         </div>
       </footer>
