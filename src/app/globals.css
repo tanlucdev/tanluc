@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f4f3ef;
-  --ink: #1c1b18;
-  --ink-soft: #6f6d66;
-  --grid-line: rgba(28, 27, 24, 0.08);
+  --paper: #f5f5f4;
+  --ink: #65625f;
+  --ink-soft: #7d7a73;
+  --grid-line: #24232109;
   --accent: #2fa872;
-  --cell: 48px;
+  --cell: 40px;
 }
 
 @theme inline {
@@ -57,6 +57,21 @@ body {
   }
 }
 
+@keyframes photo-result-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.photo-result {
+  animation: photo-result-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .flip-face {
   position: absolute;
   inset: 0;
@@ -92,5 +107,8 @@ body {
   .hint-cell {
     animation: none;
     background-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .photo-result {
+    animation: none;
   }
 }
