@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { WORK } from "@/content/work";
 
-export const metadata = { title: "Work — Neel Saswade" };
+export const metadata = { title: "Work — Tan Luc" };
 
 export default function WorkIndex() {
   return (
