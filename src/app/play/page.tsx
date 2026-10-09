@@ -1,6 +1,6 @@
 import { PLAY } from "@/content/misc";
 
-export const metadata = { title: "Play — Neel Saswade" };
+export const metadata = { title: "Play — Tan Luc" };
 
 export default function Play() {
   return (
