@@ -12,7 +12,7 @@ export interface CaseStudy {
 
 export const WORK: CaseStudy[] = [
   {
-    slug: "wayfinder",
+    slug: "cinematic-ai",
     title: "CinematicAI",
     client: "Placeholder Fintech Co.",
     year: "2025",
@@ -36,7 +36,7 @@ export const WORK: CaseStudy[] = [
     ],
   },
   {
-    slug: "atlas-design-system",
+    slug: "cafe-maps",
     title: "CafeMaps",
     client: "Placeholder SaaS Inc.",
     year: "2024",
@@ -51,7 +51,7 @@ export const WORK: CaseStudy[] = [
     ],
   },
   {
-    slug: "night-shift",
+    slug: "study-stream",
     title: "Study Stream",
     client: "Placeholder Health Co.",
     year: "2023",
