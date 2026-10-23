@@ -1,19 +1,16 @@
 import Link from "next/link";
-import { HeroGrid } from "@/components/hero/HeroGrid";
+import { HeroMeadow } from "@/components/hero/HeroMeadow";
 import { WORK } from "@/content/work";
 
 export default function Home() {
   return (
-    <>
-      <HeroGrid />
+    <div className="portfolio-home">
+      <HeroMeadow />
 
-      <section id="work" className="mx-auto max-w-6xl px-4 py-20">
+      <section id="work" className="portfolio-home-work mx-auto max-w-6xl px-4 py-20">
         <div className="mb-10 flex items-end justify-between">
           <h2 className="font-serif text-4xl italic">Selected projects</h2>
-          <Link
-            href="/work"
-            className="font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink"
-          >
+          <Link href="/work" className="font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink">
             All work →
           </Link>
         </div>
@@ -24,16 +21,11 @@ export default function Home() {
               href={`/work/${w.slug}`}
               className="group overflow-hidden rounded-xl border border-ink/10 bg-paper transition-shadow hover:shadow-lg"
             >
-              <div
-                className="h-56 w-full transition-transform duration-500 group-hover:scale-[1.02]"
-                style={{ backgroundImage: w.cover }}
-              />
+              <div className="h-56 w-full transition-transform duration-500 group-hover:scale-[1.02]" style={{ backgroundImage: w.cover }} />
               <div className="p-5">
                 <div className="flex items-baseline justify-between">
                   <h3 className="font-serif text-2xl italic">{w.title}</h3>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
-                    {w.year}
-                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">{w.year}</span>
                 </div>
                 <p className="mt-2 text-sm text-ink-soft">{w.summary}</p>
               </div>
@@ -45,11 +37,9 @@ export default function Home() {
       <footer className="border-t border-ink/10 py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 text-center">
           <p className="font-serif italic">Tan Luc</p>
-          <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
-            Software engineer 
-          </p>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">Software engineer</p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

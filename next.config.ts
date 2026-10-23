@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   turbopack: { root: process.cwd() },
+  experimental: { turbopackFileSystemCacheForDev: false },
   ...(isGithubPages ? { basePath: "/tanluc" } : {}),
 };
 

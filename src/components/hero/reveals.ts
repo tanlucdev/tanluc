@@ -78,8 +78,8 @@ export const REVEALS: Reveal[] = [
     trigger: { row: 0, col: 8 },
     region: { row: 0, col: 6, w: 2, h: 4 },
     mobile: {
-      trigger: { row: 0, col: 4 },
-      region: { row: 0, col: 4, w: 1, h: 4 },
+      trigger: { row: 0, col: 5 },
+      region: { row: 0, col: 5, w: 2, h: 4 },
     },
     kind: "fact",
     label: "AI workflows",
@@ -104,8 +104,8 @@ export const REVEALS: Reveal[] = [
     trigger: { row: 4, col: 14 },
     region: { row: 3, col: 13, w: 3, h: 3 },
     mobile: {
-      trigger: { row: 4, col: 7 },
-      region: { row: 3, col: 5, w: 3, h: 3 },
+      trigger: { row: 4, col: 10 },
+      region: { row: 3, col: 8, w: 3, h: 3 },
     },
     kind: "work",
     label: "Product UX",

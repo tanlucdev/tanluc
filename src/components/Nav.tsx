@@ -12,8 +12,8 @@ const LINKS = [
 export function Nav() {
   const pathname = usePathname();
   return (
-    <header className="relative mx-auto flex w-[calc(100%-32px)] items-baseline justify-between gap-4 pt-4 sm:w-[calc(100%-128px)] sm:justify-start sm:gap-6 sm:pt-[30px]">
-      <nav className="contents">
+    <header className="relative mx-auto flex h-[57px] w-[calc(100%-32px)] items-baseline justify-between gap-4 pt-4 sm:w-[calc(100%-128px)] sm:justify-start sm:gap-6 sm:pt-[30px]">
+      <nav className="contents" aria-label="Main navigation">
         <Link href="/" className="font-sans text-sm leading-[1.2] tracking-[-0.02em] sm:text-[clamp(15px,1.1vw,18px)] sm:leading-[1.05] sm:tracking-[-0.035em]">
           Tan Luc
         </Link>

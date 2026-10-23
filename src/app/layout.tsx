@@ -12,7 +12,7 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
 });
 export const metadata: Metadata = {
-  title: "Tan Luc — Senior Product Designer",
+  title: "Tan Luc — Software Engineer",
   description: "Portfolio of Tan Luc: product design, play, and photography.",
 };
 

@@ -119,7 +119,7 @@ export function HeroGrid() {
 
   return (
     <section
-      className="relative aspect-[12/13] min-h-[600px] overflow-hidden md:aspect-auto md:h-[calc(100svh-57px)]"
+      className="relative h-[calc(100svh-57px)] overflow-hidden"
       aria-label="Interactive introduction grid — hover or tap the glowing squares to explore"
     >
       <div

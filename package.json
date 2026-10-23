@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/convert-heic.mjs",
+    "prebuild": "node scripts/convert-heic.mjs",
+    "photos:convert": "node scripts/convert-heic.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -12,7 +15,8 @@
     "cuelume": "0.2.1",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sharp": "0.34.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
