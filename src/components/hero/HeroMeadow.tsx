@@ -6,7 +6,11 @@ type Activity = "photo" | "bike" | "walk";
 type Pointer = { x: number; y: number; active: boolean };
 type Terrain = { yAt: (x: number, width: number, height: number) => number };
 
-const activityCube = { photo: "photography", bike: "cycling", walk: "backpacking" } as const;
+const activityCube = {
+  photo: { rest: "photographer.webp", selected: "photographer_corrected.webp" },
+  bike: { rest: "cyclist.webp", selected: "cyclist_corrected.webp" },
+  walk: { rest: "hiker.webp", selected: "hiker-corrected.webp" },
+} as const;
 
 const clamp = (value: number, minimum: number, maximum: number) => Math.max(minimum, Math.min(maximum, value));
 const smootherstep = (value: number) => value * value * value * (value * (value * 6 - 15) + 10);
@@ -725,8 +729,8 @@ export function HeroMeadow() {
           <span className="meadow-activities">
             {(Object.keys(actors) as Activity[]).map((activity) => (
               <button aria-label={`${active[activity] ? "Hide" : "Show"} ${actors[activity].label.toLowerCase()} on the meadow`} aria-pressed={active[activity]} className={`meadow-token meadow-token--${activity}`} key={activity} onClick={() => setActive((current) => ({ ...current, [activity]: !current[activity] }))} ref={(element) => { buttonRefs.current[activity] = element; }} type="button">
-                <img className="meadow-token__rest" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity]}-96.webp`} />
-                <img className="meadow-token__selected" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity]}-selected-96.webp`} />
+                <img className="meadow-token__rest" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].rest}`} />
+                <img className="meadow-token__selected" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].selected}`} />
               </button>
             ))}
           </span>

@@ -92,10 +92,12 @@ function OpenPhoto({ active, getThumbnail, onClose, onSelect, photos }: PhotoLig
     }} ref={dialogRef} tabIndex={-1}>
       <div aria-hidden="true" className="photo-lightbox__backdrop" />
       <button aria-label="Close photograph" className="photo-lightbox__dismiss" onClick={() => void close()} tabIndex={-1} type="button" />
-      <div className={`photo-lightbox__media ${photo.src ? "" : "photo-lightbox__media--print"}`} ref={mediaRef} style={{ "--photo-ratio": photo.ratio ?? "0.75" } as CSSProperties}>
+      <div className="photo-lightbox__media photo-lightbox__media--print" ref={mediaRef} style={{ "--photo-ratio": photo.ratio ?? "0.75" } as CSSProperties}>
         {photo.src ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img alt={photo.label} draggable={false} src={photo.src} />
+          <img alt={photo.label} draggable={false} onLoad={(event) => {
+            if (!photo.ratio) mediaRef.current?.style.setProperty("--photo-ratio", String(event.currentTarget.naturalWidth / event.currentTarget.naturalHeight));
+          }} src={photo.src} />
         ) : <div className="size-full" style={{ backgroundImage: photo.cover }} />}
       </div>
       <nav aria-label="Browse photographs" className="photo-lightbox__navigation photo-lightbox__controls">

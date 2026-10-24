@@ -1,0 +1,59 @@
+// Run against npm run dev; PLAYWRIGHT_MODULE can select an existing Playwright installation.
+import assert from "node:assert/strict";
+const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
+const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.goto(`${process.env.BASE_URL || "http://localhost:3000"}/about`);
+  await page.getByText("I'm a software engineer drawn to ambiguous problems and the systems that bring ideas to life.", { exact: true }).waitFor();
+  const print = page.locator(".recent-print").nth(7);
+  const letters = print.locator(".recent-print__letter");
+  const opacity = (locator) => locator.evaluate((element) => getComputedStyle(element).opacity);
+  await print.getByRole("button").hover();
+  await page.waitForTimeout(250);
+  assert.equal(await opacity(letters.first()), "1");
+  assert.equal(await opacity(letters.last()), "0", "Caption must reveal progressively");
+  assert.equal(await letters.nth(1).evaluate((element) => getComputedStyle(element).transitionDelay), "0.18s");
+  await page.waitForTimeout(1000);
+  assert.equal(await opacity(letters.last()), "1");
+  assert.equal(await opacity(page.locator(".recent-print").first()), "1", "Other photos stay bright");
+  await page.mouse.move(0, 0);
+  assert.equal(await opacity(letters.first()), "0", "Leaving resets the caption");
+  await print.getByRole("button").focus();
+  assert.equal(await opacity(letters.last()), "1", "Keyboard focus reveals the complete caption");
+  await print.getByRole("button").evaluate((element) => element.blur());
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await print.getByRole("button").hover();
+  assert.equal(await opacity(letters.last()), "1", "Reduced motion skips typing");
+  await print.getByRole("button").click();
+  const media = page.locator(".photo-lightbox__media");
+  assert(await media.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.backgroundColor === "rgb(255, 255, 255)" && parseFloat(style.paddingLeft) >= 10;
+  }), "Opened photo has a white frame");
+  await page.keyboard.press("ArrowRight");
+  await page.getByRole("dialog", { name: "Chasing the light", exact: true }).waitFor();
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "detached" });
+  assert(await print.getByRole("button").evaluate((element) => element === document.activeElement));
+  assert.equal(await print.getByRole("button").evaluate((element) => getComputedStyle(element).transform), "none", "Escape restores thumbnail size despite returned focus");
+  assert.equal(await opacity(print.locator("figcaption")), "0", "Escape hides the caption");
+  assert.equal(await print.getByRole("button").evaluate((element) => getComputedStyle(element).outlineStyle), "none", "Escape leaves no enlarged focus ring");
+  await page.mouse.move(0, 0);
+  await print.getByRole("button").hover();
+  assert.equal(await opacity(letters.last()), "1", "Hover works again after Escape");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await print.getByRole("button").click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("dialog").waitFor({ state: "detached" });
+  await page.waitForTimeout(300);
+  assert.equal(await print.getByRole("button").evaluate((element) => getComputedStyle(element).transform), "none", "Animated close must not reactivate zoom");
+  await page.keyboard.press("Tab");
+  assert.equal(await opacity(page.locator(".recent-print").nth(8).locator("figcaption")), "1", "Keyboard browsing resumes after closing");
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await print.locator("figcaption").evaluate((element) => getComputedStyle(element).display), "none");
+  assert.equal(await print.getByRole("button").evaluate((element) => getComputedStyle(element).transform), "none");
+  console.log("PASS: About copy, progressive hover, reset, keyboard, reduced motion, white frame, navigation, mobile");
+} finally {
+  await browser.close();
+}

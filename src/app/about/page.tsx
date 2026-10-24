@@ -30,13 +30,10 @@ export default function About() {
           <h1 className="mb-[13px] font-serif text-[26px] leading-[1.15] italic text-ink min-[701px]:text-[30px]">Hello!</h1>
           <div className="space-y-4 font-serif text-[16px] leading-[1.6] tracking-[-0.012em] text-ink-soft min-[701px]:space-y-[18px] min-[701px]:text-[18px] min-[701px]:leading-[1.55]">
             <p>
-              I&apos;m Tan Luc, a product designer drawn to ambiguous problems, quiet
-              systems, and the interactions that make technology feel natural.
+              I&apos;m a software engineer drawn to ambiguous problems and the systems that bring ideas to life.
             </p>
             <p>
-              I found my way into design through a human-robot interaction lab.
-              Watching people meet unfamiliar machines made me curious about how
-              we introduce new ideas in ways that make sense.
+              My journey began with frontend development, where I first explored how technology takes shape through interfaces. As I started building products of my own, I became curious about everything behind them — how systems work, how decisions are made, and how we turn ideas into experiences people can actually use.
             </p>
           </div>
           <nav aria-label="Professional links" className="mt-7 flex items-center gap-[18px] text-ink-soft">
