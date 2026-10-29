@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RecentGallery } from "@/components/about/RecentGallery";
 import { PROFILE } from "@/content/profile";
 import type { CSSProperties } from "react";
@@ -42,9 +43,9 @@ export default function About() {
           </nav>
         </div>
 
-        <div className="order-1 mx-auto w-[200px] rotate-[1.5deg] bg-white p-[10px] min-[701px]:order-2 min-[701px]:mx-0 min-[701px]:w-[248px]">
-          <div className="flex aspect-[3/4] items-center justify-center rounded-[8px] border border-dashed border-ink/20 bg-[linear-gradient(135deg,#d9c7b1,#9a765e)] p-6 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-white/85">
-            Your portrait<br />goes here
+        <div className="about-portrait-card order-1 mx-auto w-[200px] rounded-[2px] bg-white p-[10px] min-[701px]:order-2 min-[701px]:mx-0 min-[701px]:w-[248px]">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-[8px]">
+            <Image alt="Tan Luc by the lake on a solo trip to Da Lat" className="object-cover" fill loading="eager" sizes="(max-width: 700px) 180px, 228px" src={`${basePath}/images/about/recently/da-lat-solo-trip.jpg`} />
           </div>
         </div>
       </section>

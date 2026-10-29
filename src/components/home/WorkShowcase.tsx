@@ -150,9 +150,15 @@ function ArtifactMedia({ running }: { running: boolean }) {
 }
 
 function ProjectMedia({ project, running }: { project: HomeShowcaseProject; running: boolean }) {
-  if (project.media === "proactive") return <ProactiveMedia running={running} />;
-  if (project.media === "homepage") return <HomepageMedia running={running} />;
-  return <ArtifactMedia running={running} />;
+  const media = project.media === "proactive" ? <ProactiveMedia running={running} /> : project.media === "homepage" ? <HomepageMedia running={running} /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} /> : <ArtifactMedia running={running} />;
+  return <div className={styles.mediaFrame}>{media}{project.referenceMedia && <span className={styles.reference} data-work-reference>Temporary reference preview; not portfolio work</span>}</div>;
+}
+
+function CafeMapsMedia({ project }: { project: HomeShowcaseProject }) {
+  return <a className={`${styles.media} ${styles.cafemapsMedia}`} href={project.url!} target="_blank" rel="noreferrer" aria-label="Visit Cafemaps">
+    <img src="/images/work/cafemaps/website.jpg" alt="Cafemaps cafe discovery website" />
+    <span className={styles.cafemapsStats} data-cafemaps-stats>{project.stats?.map((stat) => <span key={stat}>{stat}</span>)}</span>
+  </a>;
 }
 
 function ease(progress: number) {
@@ -284,8 +290,8 @@ export default function WorkShowcase() {
   const running = !motionPaused;
   return <section id="work" className={`portfolio-home-work ${styles.showcase}`} aria-labelledby="work-title">
     <div className={styles.editorial}>
-      <aside className={styles.rail}><nav ref={navRef} className={styles.nav} data-revealed={navRevealed} aria-label="Selected work">{HOME_SHOWCASE.map((project) => <a key={project.slug} href={`#work-${project.slug}`} aria-current={active === project.slug ? "location" : undefined} onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, "", `#work-${project.slug}`); const target = document.getElementById(`work-${project.slug}`); if (target) { moveTo(target, true); target.focus({ preventScroll: true }); } }}>{project.company}</a>)}<span className={styles.dot} data-work-dot aria-hidden="true" /></nav></aside>
-      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span><span>—</span></div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p></Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
+      <aside className={styles.rail}><nav ref={navRef} className={styles.nav} data-revealed={navRevealed} aria-label="Selected work">{HOME_SHOWCASE.map((project) => <a key={project.slug} href={`#work-${project.slug}`} aria-current={active === project.slug ? "location" : undefined} onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, "", `#work-${project.slug}`); const target = document.getElementById(`work-${project.slug}`); if (target) { moveTo(target, true); target.focus({ preventScroll: true }); } }}>{project.title}</a>)}<span className={styles.dot} data-work-dot aria-hidden="true" /></nav></aside>
+      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span>{project.role && <span>{project.role}</span>}{project.period && <span>{project.period}</span>}</div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p>{project.url && <a className={styles.projectLink} href={project.url} target="_blank" rel="noreferrer">Visit cafemaps.net</a>}</Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
     </div>
   </section>;
 }

@@ -1,5 +1,7 @@
 // Run against npm run dev. Requires Playwright; PLAYWRIGHT_MODULE may point to an existing installation.
 import assert from "node:assert/strict";
+import { stat } from "node:fs/promises";
+import path from "node:path";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
 const base = process.env.BASE_URL || "http://localhost:3000";
 
@@ -20,8 +22,14 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     await page.goto(`${base}/photography`);
     await page.locator('.photo-gallery[data-ready="true"]').waitFor();
     const total = await page.locator(".photo-result").count();
-    assert(total > 0);
-    assert.match(await page.locator(".photo-result img").first().getAttribute("src"), /\/generated\/thumbnail\/[a-f0-9]{64}\.webp$/);
+    assert.equal(total, 32, "Gallery contains the 32 originals once each");
+    const images = await page.locator(".photo-result img").evaluateAll((nodes) => nodes.map((image) => ({ src: image.getAttribute("src"), loading: image.loading, priority: image.fetchPriority })));
+    assert(images.every((image) => /\/generated\/thumbnail\/[a-f0-9]{64}\.webp$/.test(image.src)), "All gallery images use Sharp thumbnails");
+    const sizes = await Promise.all(images.map(async (image) => (await stat(path.join(process.cwd(), "public/images/photo/generated/thumbnail", path.basename(decodeURIComponent(image.src))))).size));
+    assert.deepEqual(sizes, [...sizes].sort((a, b) => a - b), "Default photo order is smallest file first");
+    assert(images.slice(0, 4).every((image) => image.loading === "eager"), "First row loads eagerly");
+    assert(images.slice(4).every((image) => image.loading === "lazy"), "Remaining photos load lazily");
+    assert.equal(images[0].priority, "high", "First photo has download priority");
     const search = page.getByRole("searchbox");
     const heightBeforeFilter = await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height);
     await search.fill("sunsets");
@@ -30,7 +38,7 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     assert(falling.some((frames) => frames.some((frame) => /rotate/.test(frame.transform))), "Filtered photos must fall and rotate");
     const fallTiming = await page.locator('.photo-result[data-visible="false"]').first().evaluate((element) => element.getAnimations()[0].effect.getTiming());
     assert(fallTiming.duration >= 600 && fallTiming.duration <= 690, "Fall lasts 600-690ms");
-    assert((await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height)) >= heightBeforeFilter, "Grid holds its old height while photos fall");
+    assert((await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height)) >= heightBeforeFilter - 1, "Grid holds its old height while photos fall (within offsetHeight rounding)");
     const survivorDelay = await page.locator('.photo-result[data-visible="true"]').first().evaluate((element) => element.getAnimations()[0]?.effect.getTiming().delay ?? 0);
     assert(survivorDelay >= 780, "Survivors reflow after the fall and 180ms gap");
     await page.waitForTimeout(1600);

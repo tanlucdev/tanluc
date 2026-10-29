@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 
 const PHOTOS = [
@@ -18,6 +18,12 @@ const PHOTOS = [
 ];
 
 export function RecentGallery({ basePath = "" }: { basePath?: string }) {
+  const gallery = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    gallery.current?.querySelectorAll("img").forEach((image) => {
+      if (image.complete && image.naturalWidth > 0) image.dataset.loaded = "true";
+    });
+  }, [basePath]);
   const [active, setActive] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
   const [focused, setFocused] = useState<number | null>(null);
@@ -30,11 +36,12 @@ export function RecentGallery({ basePath = "" }: { basePath?: string }) {
         Recents from life
       </h2>
       <div className="-mx-2 overflow-x-auto px-2 py-3 min-[701px]:mx-0 min-[701px]:overflow-visible min-[701px]:px-0 min-[701px]:py-2">
-        <div className="flex items-start gap-5 min-[701px]:items-end min-[701px]:gap-0">
+        <div ref={gallery} className="flex items-start gap-5 min-[701px]:items-end min-[701px]:gap-0">
           {PHOTOS.map((item, index) => (
             <figure
               className={`recent-print group/print relative h-[210px] w-[140px] shrink-0 snap-start min-[701px]:aspect-[2/3] min-[701px]:h-auto min-[701px]:w-[calc(9.09091%+7.27273px)] min-[701px]:-ml-2 min-[701px]:first:ml-0 ${highlighted === index ? "min-[701px]:z-20" : ""}`}
               key={item.label}
+              style={{ "--print-index": index } as CSSProperties}
               data-dismissed={highlighted !== index || undefined}
               onKeyDown={() => setDismissed(false)}
               onMouseEnter={(event) => {
@@ -54,7 +61,7 @@ export function RecentGallery({ basePath = "" }: { basePath?: string }) {
                 type="button"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="" className="block size-full object-cover" src={`${basePath}/images/photo/${encodeURIComponent(item.file)}`} />
+                <img alt="" className="recent-print__image block size-full object-cover" onLoad={(event) => { event.currentTarget.dataset.loaded = "true"; }} src={`${basePath}/images/photo/${encodeURIComponent(item.file)}`} />
               </button>
               <figcaption className={`recent-print__caption pointer-events-none absolute top-[calc(4px-85%)] hidden w-max max-w-40 font-serif text-[16px] leading-[1.45] text-ink-soft opacity-0 min-[701px]:block ${index >= PHOTOS.length - 2 ? "right-[calc(142.5%+12px)] text-right" : "left-[calc(142.5%+12px)]"}`}>
                 <span className="sr-only">{item.label}</span>

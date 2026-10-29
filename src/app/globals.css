@@ -33,6 +33,13 @@ body {
   background-size: var(--cell) var(--cell);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .route-arrival { animation: page-arrive 460ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+  .route-arrival:has(> .photography-page) { animation: none; }
+  .photo-gallery[data-ready="true"] { animation: page-arrive 200ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+}
+@keyframes page-arrive { from { opacity: 0; } to { opacity: 1; } }
+
 .portfolio-home { overflow-x: clip; }
 
 .meadow-hero {
@@ -502,6 +509,23 @@ body:has(.photography-page) { background-image: none; }
 .photo-sort__options button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; border-radius: 5px; padding: 10px 12px; color: var(--ink); font-size: 14px; text-align: left; }
 .photo-sort__options button:hover { background: rgb(36 35 33 / 0.043); }
 .photo-sort__options span { width: 14px; text-align: center; }
+.about-portrait-card { transform: rotate(1.5deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .about-portrait-card { transition: transform 320ms cubic-bezier(0.22, 0.7, 0.2, 1); }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .about-portrait-card:hover { transform: rotate(-1deg) scale(1.01); }
+}
+@media (scripting: enabled) {
+  .recent-print__image { opacity: 0; }
+  .recent-print__image[data-loaded="true"] { opacity: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .recent-print__image[data-loaded="true"] {
+    animation: recent-photo-arrive 240ms cubic-bezier(0.23, 1, 0.32, 1) calc(var(--print-index, 0) * 30ms) backwards;
+  }
+}
+@keyframes recent-photo-arrive { from { opacity: 0; } to { opacity: 1; } }
 .recent-print__letter { opacity: 0; }
 @media (min-width: 701px) and (hover: hover) and (pointer: fine) {
   .recent-print__paper { transform-origin: center bottom; transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1); }

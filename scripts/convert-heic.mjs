@@ -25,3 +25,6 @@ for (const source of sources) {
 
   await unlink(input);
 }
+
+// ponytail: shared photo variants; add formats in the generator when needed.
+await import("./generate-photo-variants.mjs");

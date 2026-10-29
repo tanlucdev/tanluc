@@ -10,7 +10,8 @@ const firstWork = "#work-wala-ict";
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(base, { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(150);
+  await page.locator(".portfolio-home-work nav[data-ready='true']").waitFor({ state: "attached" });
+  await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => window.scrollTo(0, 0));
   const initialTarget = await page.locator(firstWork).evaluate((node) => {
     const rect = node.getBoundingClientRect();
@@ -47,7 +48,11 @@ try {
   await page.locator(work).scrollIntoViewIfNeeded();
   await page.waitForTimeout(150);
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector("[data-work-dot]")).opacity) > .95);
-  assert.equal(await page.locator("section[id^='work-']").count(), 3, "three projects render");
+  assert.equal(await page.locator("section[id^='work-']").count(), 4, "four projects render");
+  assert.deepEqual(await page.locator(".portfolio-home-work nav a").allTextContents(), ["Dynamic Models", "Cafemaps", "MedicHIMS", "ISB project"], "project navigation follows the case-study order");
+  assert.equal(await page.locator("#work-cafemaps").textContent().then((text) => text?.includes("500 registered users") && text.includes("15,000 visits") && text.includes("50 community-contributed cafes")), true, "Cafemaps stats render");
+  assert.equal(await page.locator("#work-cafemaps").getByRole("link", { name: "Visit cafemaps.net" }).getAttribute("href"), "https://cafemaps.net", "Cafemaps links to the public product");
+  assert.equal(await page.locator("[data-work-reference]").count(), 3, "reference previews are honestly labelled");
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, "desktop has no horizontal overflow");
   assert.equal(await page.locator(".portfolio-home-work nav a[aria-current='location']").count(), 1, "active project has nav state");
   assert.equal(await page.locator("[data-work-dot]").evaluate((dot) => getComputedStyle(dot).opacity !== "0"), true, "active dot is visible");
@@ -81,7 +86,8 @@ try {
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await mobile.goto(base, { waitUntil: "domcontentloaded" });
-  await mobile.waitForTimeout(150);
+  await mobile.locator(".portfolio-home-work nav[data-ready='true']").waitFor({ state: "attached" });
+  await mobile.evaluate(() => document.fonts.ready);
   await mobile.evaluate(() => window.scrollTo(0, 0));
   const mobileTarget = await mobile.locator(firstWork).evaluate((node) => {
     const rect = node.getBoundingClientRect();
@@ -92,6 +98,8 @@ try {
   assert.ok(await mobile.evaluate((target) => window.scrollY < target - 100, mobileTarget), "mobile keeps initial wheel native");
   await mobile.locator(work).scrollIntoViewIfNeeded();
   assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, "mobile has no horizontal overflow");
+  await mobile.locator("#work-cafemaps").scrollIntoViewIfNeeded();
+  assert.ok(await mobile.locator("[data-cafemaps-stats]").evaluate((node) => node.getBoundingClientRect().height < 80), "Cafemaps stats remain compact on mobile");
   assert.equal(await mobile.locator(".portfolio-home-work nav").evaluate((nav) => getComputedStyle(nav.parentElement).display), "none", "mobile hides the rail");
 
   for (const [target, direction] of [[page, "row"], [mobile, "column"]]) {
@@ -113,7 +121,8 @@ try {
   const noJsContext = await browser.newContext({ javaScriptEnabled: false });
   const noJs = await noJsContext.newPage();
   await noJs.goto(base, { waitUntil: "domcontentloaded" });
-  assert.equal(await noJs.locator("section[id^='work-']").count(), 3, "server-rendered work remains visible without JavaScript");
+  assert.equal(await noJs.locator("section[id^='work-']").count(), 4, "server-rendered work remains visible without JavaScript");
+  assert.match(await noJs.getByRole("link", { name: "Stack & experience", exact: true }).getAttribute("href"), /\/about#how-i-build$/, "Home retains the profile teaser alongside the newer showcase");
   await noJsContext.close();
   console.log("work showcase: pass");
 } finally {

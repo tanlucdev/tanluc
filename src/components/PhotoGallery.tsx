@@ -154,9 +154,9 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
       </div>
       <p aria-live="polite" className="sr-only" role="status">{filtered.length} photographs{search ? ` matching ${search}` : ""}</p>
       <div className="photo-gallery" id="photo-results" ref={galleryRef}>
-        {photos.map((photo) => <button aria-haspopup="dialog" aria-label={`Open ${photo.title}`} className="photo-result" data-photo-src={photo.src} data-silent-hover="true" key={photo.src} onClick={() => setActive(filtered.findIndex((item) => item.src === photo.src))} ref={(button) => { if (button) buttons.current.set(photo.src, button); else buttons.current.delete(photo.src); }} type="button">
+        {photos.map((photo, index) => <button aria-haspopup="dialog" aria-label={`Open ${photo.title}`} className="photo-result" data-photo-src={photo.src} data-silent-hover="true" key={photo.src} onClick={() => setActive(filtered.findIndex((item) => item.src === photo.src))} ref={(button) => { if (button) buttons.current.set(photo.src, button); else buttons.current.delete(photo.src); }} type="button">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={photo.title} decoding="async" draggable={false} height={photo.height} loading="lazy" onLoad={(event) => { event.currentTarget.dataset.loaded = "true"; }} ref={(image) => { if (image?.complete && image.naturalWidth) image.dataset.loaded = "true"; }} src={photo.thumbnail} width={photo.width} />
+          <img alt={photo.title} decoding="async" draggable={false} height={photo.height} loading={index < 4 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} onLoad={(event) => { event.currentTarget.dataset.loaded = "true"; }} ref={(image) => { if (image?.complete && image.naturalWidth) image.dataset.loaded = "true"; }} src={photo.thumbnail} width={photo.width} />
         </button>)}
       </div>
       {!filtered.length && <p className="photo-empty">No photographs found.</p>}

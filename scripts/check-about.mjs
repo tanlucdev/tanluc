@@ -6,7 +6,50 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await page.goto(`${process.env.BASE_URL || "http://localhost:3000"}/about`);
   await page.getByText("I'm a software engineer drawn to ambiguous problems and the systems that bring ideas to life.", { exact: true }).waitFor();
+  assert.deepEqual(await page.locator("#how-i-build h3").allTextContents(), ["Frontend", "State & data", "Backend", "AI & testing"]);
+  assert.equal(await page.locator("#how-i-build li a").count(), 19, "Merged About retains every profile tool");
+  assert.deepEqual(await page.locator("section[aria-labelledby='experience-title'] h3").allTextContents(), ["WALA ICT", "ISB Vietnam", "OneMedic"]);
+  const resume = await page.getByRole("link", { name: "Resume", exact: true }).getAttribute("href");
+  assert.equal((await page.request.get(new URL(resume, page.url()).href)).status(), 200, "Resume remains available");
+  const portrait = page.locator(".about-portrait-card");
+  const portraitTransform = () => portrait.evaluate((element) => getComputedStyle(element).transform);
+  await portrait.locator("img").evaluate((image) => image.decode());
+  assert((await portrait.locator("img").getAttribute("src")).endsWith("/images/about/recently/da-lat-solo-trip.jpg"));
+  const restingPortrait = await portraitTransform();
+  assert.equal(await portrait.evaluate((element) => getComputedStyle(element).transitionDuration), "0.32s");
+  await portrait.hover();
+  await page.waitForTimeout(400);
+  assert(await portrait.evaluate((element) => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    return Math.abs(Math.atan2(matrix.b, matrix.a) * 180 / Math.PI + 1) < .01 && Math.abs(Math.hypot(matrix.a, matrix.b) - 1.01) < .001;
+  }), "Portrait hover matches reference: -1 degree, scale 1.01");
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(400);
+  assert.equal(await portraitTransform(), restingPortrait, "Portrait returns to its original angle");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await portrait.hover();
+  assert.equal(await portraitTransform(), restingPortrait, "Reduced motion skips portrait hover");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.mouse.move(0, 0);
   await page.locator(".recent-print img").evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+  await page.waitForFunction(() => [...document.querySelectorAll(".recent-print img")].every((image) => image.dataset.loaded === "true"));
+  const entrance = await page.locator(".recent-print img").evaluateAll((images) => {
+    images.forEach((image) => { image.style.animation = "none"; });
+    void document.body.offsetWidth;
+    return images.map((image) => {
+      image.style.animation = "";
+      const animation = image.getAnimations()[0];
+      const timing = animation.effect.getTiming();
+      animation.pause();
+      animation.currentTime = 150;
+      const opacity = Number(getComputedStyle(image).opacity);
+      animation.currentTime = timing.delay + timing.duration;
+      return { delay: timing.delay, duration: timing.duration, easing: getComputedStyle(image).animationTimingFunction, opacity, finalOpacity: getComputedStyle(image).opacity };
+    });
+  });
+  assert.deepEqual(entrance.map(({ delay }) => delay), Array.from({ length: 11 }, (_, index) => index * 30));
+  assert(entrance.every(({ duration, easing, finalOpacity }) => duration === 240 && easing === "cubic-bezier(0.23, 1, 0.32, 1)" && finalOpacity === "1"));
+  assert(entrance[0].opacity > .95 && entrance[5].opacity === 0 && entrance[10].opacity === 0, "Photos fade in from left to right, without moving the paper");
   const print = page.locator(".recent-print").nth(7);
   const letters = print.locator(".recent-print__letter");
   const opacity = (locator) => locator.evaluate((element) => getComputedStyle(element).opacity);
@@ -24,6 +67,7 @@ try {
   assert.equal(await opacity(letters.last()), "1", "Keyboard focus reveals the complete caption");
   await print.getByRole("button").evaluate((element) => element.blur());
   await page.emulateMedia({ reducedMotion: "reduce" });
+  assert(await page.locator(".recent-print img").evaluateAll((images) => images.every((image) => getComputedStyle(image).animationName === "none" && getComputedStyle(image).opacity === "1")), "Reduced motion shows every loaded photo immediately");
   await print.getByRole("button").hover();
   assert.equal(await opacity(letters.last()), "1", "Reduced motion skips typing");
   await print.getByRole("button").click();
@@ -65,7 +109,15 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(await print.locator("figcaption").evaluate((element) => getComputedStyle(element).display), "none");
   assert.equal(await print.getByRole("button").evaluate((element) => getComputedStyle(element).transform), "none");
-  console.log("PASS: About copy, progressive hover, reset, keyboard, reduced motion, white frame, navigation, mobile");
+  const touch = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await touch.goto(`${process.env.BASE_URL || "http://localhost:3000"}/about`);
+  const touchPortrait = touch.locator(".about-portrait-card");
+  const touchRest = await touchPortrait.evaluate((element) => getComputedStyle(element).transform);
+  await touchPortrait.tap();
+  await touch.waitForTimeout(400);
+  assert.equal(await touchPortrait.evaluate((element) => getComputedStyle(element).transform), touchRest, "Touch does not leave a sticky portrait hover");
+  assert(await touch.evaluate(() => document.documentElement.scrollWidth === innerWidth), "Portrait does not overflow mobile");
+  console.log("PASS: About copy, portrait image/hover/reset/touch, staggered photo arrival, progressive hover, reset, keyboard, reduced motion, white frame, navigation, mobile");
 } finally {
   await browser.close();
 }
