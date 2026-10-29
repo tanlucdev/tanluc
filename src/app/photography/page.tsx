@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import type { Photo } from "@/content/misc";
@@ -60,10 +60,12 @@ function toTitle(filename: string) {
 async function getPhotos(): Promise<Photo[]> {
   const entries = await readdir(PHOTO_DIRECTORY, { withFileTypes: true });
   const basePath = process.env.GITHUB_PAGES === "true" ? "/tanluc" : "";
+  const files = await Promise.all(entries
+    .filter((entry) => entry.isFile() && /\.webp$/i.test(entry.name))
+    .map(async (entry) => ({ name: entry.name, size: (await stat(path.join(PHOTO_DIRECTORY, entry.name))).size })));
 
-  return Promise.all(entries
-    .filter((entry) => entry.isFile() && IMAGE_FILE.test(entry.name))
-    .sort((a, b) => a.name.localeCompare(b.name))
+  return Promise.all(files
+    .sort((a, b) => a.size - b.size || a.name.localeCompare(b.name))
     .map(async (entry) => {
       const title = CAPTIONS[entry.name.replace(IMAGE_FILE, "")] ?? CAPTIONS[entry.name.split("-")[0]] ?? toTitle(entry.name);
       const image = sharp(path.join(PHOTO_DIRECTORY, entry.name));

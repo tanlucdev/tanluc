@@ -11,6 +11,7 @@ export interface LightboxPhoto {
 
 interface PhotoLightboxProps {
   active: number | null;
+  framed?: boolean;
   getThumbnail?: (index: number) => HTMLElement | null;
   onClose: () => void;
   onSelect: (index: number) => void;
@@ -22,7 +23,7 @@ export function PhotoLightbox(props: PhotoLightboxProps) {
   return <OpenPhoto {...props} active={props.active} />;
 }
 
-function OpenPhoto({ active, getThumbnail, onClose, onSelect, photos }: PhotoLightboxProps & { active: number }) {
+function OpenPhoto({ active, framed = true, getThumbnail, onClose, onSelect, photos }: PhotoLightboxProps & { active: number }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLElement | null>(null);
@@ -92,7 +93,7 @@ function OpenPhoto({ active, getThumbnail, onClose, onSelect, photos }: PhotoLig
     }} ref={dialogRef} tabIndex={-1}>
       <div aria-hidden="true" className="photo-lightbox__backdrop" />
       <button aria-label="Close photograph" className="photo-lightbox__dismiss" onClick={() => void close()} tabIndex={-1} type="button" />
-      <div className="photo-lightbox__media photo-lightbox__media--print" ref={mediaRef} style={{ "--photo-ratio": photo.ratio ?? "0.75" } as CSSProperties}>
+      <div className={`photo-lightbox__media${framed ? " photo-lightbox__media--print" : ""}`} ref={mediaRef} style={{ "--photo-ratio": photo.ratio ?? "0.75" } as CSSProperties}>
         {photo.src ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img alt={photo.label} draggable={false} onLoad={(event) => {
