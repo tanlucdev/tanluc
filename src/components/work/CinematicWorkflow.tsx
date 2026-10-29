@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const asset = "/images/work/cinematic-ai/";
+const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/work/cinematic-ai/`;
 
 function Check() {
   return <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg>;

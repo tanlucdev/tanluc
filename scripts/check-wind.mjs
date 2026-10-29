@@ -73,7 +73,7 @@ try {
   assert.equal(await blockedStorage.evaluate(() => window.__wind.plays), 1);
   await blockedStorage.getByRole("link", { name: "About", exact: true }).click();
   await blockedStorage.waitForURL(/\/about\/?$/);
-  await blockedStorage.locator('a[href="/"]').first().click();
+  await blockedStorage.getByRole("link", { name: "Tan Luc", exact: true }).click();
   await blockedStorage.waitForURL(base + "/");
   await blockedStorage.waitForFunction(() => document.querySelector(".meadow-scene")?.dataset.scrollState === "hero");
   await blockedStorage.locator(".meadow-hero").click({ position: { x: 30, y: 250 } });

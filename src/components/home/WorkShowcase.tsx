@@ -4,7 +4,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { HOME_SHOWCASE, type HomeShowcaseProject } from "@/content/home-showcase";
 import styles from "./WorkShowcase.module.css";
 
-const base = "/images/work/reference";
+const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/work`;
+const base = `${asset}/reference`;
 const psychicCards = Array.from({ length: 18 }, (_, index) => `${base}/psychic-cards/card-${(index * 7) % 18}.png`);
 const homepageCards = [8, 5, 2, 6, 1, 3, 7, 0, 4, 9].map((index) => `${base}/homepage-cards/homepage_cards${index ? `-${index}` : ""}.png`);
 const skinFiles = ["gmail-skin.png", "slack-skin.png", "outlook-skin.png"];
@@ -156,7 +157,7 @@ function ProjectMedia({ project, running }: { project: HomeShowcaseProject; runn
 
 function CafeMapsMedia({ project }: { project: HomeShowcaseProject }) {
   return <a className={`${styles.media} ${styles.cafemapsMedia}`} href={project.url!} target="_blank" rel="noreferrer" aria-label="Visit Cafemaps">
-    <img src="/images/work/cafemaps/website.jpg" alt="Cafemaps cafe discovery website" />
+    <img src={`${asset}/cafemaps/website.jpg`} alt="Cafemaps cafe discovery website" />
     <span className={styles.cafemapsStats} data-cafemaps-stats>{project.stats?.map((stat) => <span key={stat}>{stat}</span>)}</span>
   </a>;
 }

@@ -16,10 +16,12 @@ const clamp = (value: number, minimum: number, maximum: number) => Math.max(mini
 const smootherstep = (value: number) => value * value * value * (value * (value * 6 - 15) + 10);
 let welcomePlayed = false;
 
+const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/home`;
+
 const actors = {
-  photo: { label: "Photography", frames: Array.from({ length: 5 }, (_, index) => `/images/home/photographer-frame-${index + 1}.png`), foot: 0.98, direction: 1, nativeFacing: 1, speed: 0, speedMin: 0, speedMax: 0, turnDuration: 0, tilt: 0, cadence: 14 },
-  bike: { label: "Cycling", frames: Array.from({ length: 3 }, (_, index) => `/images/home/bike-rider-frame-${index + 1}.png`), foot: 0.985, direction: 1, nativeFacing: 1, speed: 0.068, speedMin: 60, speedMax: 92, turnDuration: 260, tilt: 0.34, cadence: 9 },
-  walk: { label: "Backpacking", frames: Array.from({ length: 3 }, (_, index) => `/images/home/backpacker-frame-${index + 1}.png`), foot: 0.99, direction: -1, nativeFacing: -1, speed: 0.038, speedMin: 34, speedMax: 52, turnDuration: 240, tilt: 0.07, cadence: 9 },
+  photo: { label: "Photography", frames: Array.from({ length: 5 }, (_, index) => `${asset}/photographer-frame-${index + 1}.png`), foot: 0.98, direction: 1, nativeFacing: 1, speed: 0, speedMin: 0, speedMax: 0, turnDuration: 0, tilt: 0, cadence: 14 },
+  bike: { label: "Cycling", frames: Array.from({ length: 3 }, (_, index) => `${asset}/bike-rider-frame-${index + 1}.png`), foot: 0.985, direction: 1, nativeFacing: 1, speed: 0.068, speedMin: 60, speedMax: 92, turnDuration: 260, tilt: 0.34, cadence: 9 },
+  walk: { label: "Backpacking", frames: Array.from({ length: 3 }, (_, index) => `${asset}/backpacker-frame-${index + 1}.png`), foot: 0.99, direction: -1, nativeFacing: -1, speed: 0.038, speedMin: 34, speedMax: 52, turnDuration: 240, tilt: 0.07, cadence: 9 },
 } as const;
 
 function useMeadowTerrain() {
@@ -28,7 +30,7 @@ function useMeadowTerrain() {
   useEffect(() => {
     const image = new Image();
     image.decoding = "async";
-    image.src = "/images/home/grass.png";
+    image.src = `${asset}/grass.png`;
     image.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = image.naturalWidth;
@@ -77,7 +79,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
 
     const tree = new Image();
     tree.decoding = "async";
-    tree.src = "/images/home/tree.png";
+    tree.src = `${asset}/tree.png`;
     const grass = new Image();
     grass.decoding = "async";
     const texture = document.createElement("canvas");
@@ -436,7 +438,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     const observer = new ResizeObserver(resize);
     observer.observe(treeCanvas.parentElement!);
     grass.onload = () => { seedGrass(); if (reducedMotion) draw(0); };
-    grass.src = "/images/home/grass.png";
+    grass.src = `${asset}/grass.png`;
     tree.onload = () => { if (reducedMotion) draw(0); };
     window.addEventListener("pointermove", moveCursor, { passive: true });
     window.addEventListener("pointerout", leaveWindow);
@@ -463,8 +465,8 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       <canvas aria-hidden="true" className="meadow-grass-canvas" ref={grassRef} />
       <div aria-hidden="true" className="meadow-cursor" data-state="idle" data-phase="off" ref={cursorRef}>
         <span className="meadow-cursor__direction">
-          <img alt="" draggable="false" className="meadow-cursor__idle" src="/images/home/pet/idle.png" />
-          <img alt="" draggable="false" className="meadow-cursor__blow" src="/images/home/pet/strained.png" />
+          <img alt="" draggable="false" className="meadow-cursor__idle" src={`${asset}/pet/idle.png`} />
+          <img alt="" draggable="false" className="meadow-cursor__blow" src={`${asset}/pet/strained.png`} />
         </span>
       </div>
     </>
@@ -774,8 +776,8 @@ export function HeroMeadow() {
           <span className="meadow-activities">
             {(Object.keys(actors) as Activity[]).map((activity) => (
               <button aria-label={`${active[activity] ? "Hide" : "Show"} ${actors[activity].label.toLowerCase()} on the meadow`} aria-pressed={active[activity]} className={`meadow-token meadow-token--${activity}`} key={activity} onClick={() => setActive((current) => ({ ...current, [activity]: !current[activity] }))} ref={(element) => { buttonRefs.current[activity] = element; }} type="button">
-                <img className="meadow-token__rest" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].rest}`} />
-                <img className="meadow-token__selected" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].selected}`} />
+                <img className="meadow-token__rest" alt="" draggable="false" src={`${asset}/activities/${activityCube[activity].rest}`} />
+                <img className="meadow-token__selected" alt="" draggable="false" src={`${asset}/activities/${activityCube[activity].selected}`} />
               </button>
             ))}
           </span>
@@ -783,7 +785,7 @@ export function HeroMeadow() {
       </div>
 
       <div className={`meadow-scene ${active.photo ? "is-photo-active" : ""}`} ref={sceneRef}>
-        <div aria-hidden="true" className="meadow-ground"><img alt="" draggable="false" src="/images/home/grass.png" /></div>
+        <div aria-hidden="true" className="meadow-ground"><img alt="" draggable="false" src={`${asset}/grass.png`} /></div>
         <MeadowCanvas pointer={pointer} terrain={terrain} />
         <MeadowActor activity="photo" active={active.photo} buttonRefs={buttonRefs} sceneRef={sceneRef} terrain={terrain} />
         <MeadowActor activity="bike" active={active.bike} buttonRefs={buttonRefs} sceneRef={sceneRef} terrain={terrain} />

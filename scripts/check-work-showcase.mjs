@@ -12,6 +12,7 @@ try {
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.locator(".portfolio-home-work nav[data-ready='true']").waitFor({ state: "attached" });
   await page.evaluate(() => document.fonts.ready);
+  await page.locator(".portfolio-home img").evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
   await page.evaluate(() => window.scrollTo(0, 0));
   const initialTarget = await page.locator(firstWork).evaluate((node) => {
     const rect = node.getBoundingClientRect();
@@ -122,7 +123,7 @@ try {
   const noJs = await noJsContext.newPage();
   await noJs.goto(base, { waitUntil: "domcontentloaded" });
   assert.equal(await noJs.locator("section[id^='work-']").count(), 4, "server-rendered work remains visible without JavaScript");
-  assert.match(await noJs.getByRole("link", { name: "Stack & experience", exact: true }).getAttribute("href"), /\/about#how-i-build$/, "Home retains the profile teaser alongside the newer showcase");
+  assert.match(await noJs.getByRole("link", { name: "Stack & experience", exact: true }).getAttribute("href"), /\/about\/?#how-i-build$/, "Home retains the profile teaser alongside the newer showcase");
   await noJsContext.close();
   console.log("work showcase: pass");
 } finally {
