@@ -18,6 +18,7 @@ export interface Photo {
   title: string;
   place: string;
   src: string;
+  thumbnail: string;
   tags?: string[];
   width: number;
   height: number;

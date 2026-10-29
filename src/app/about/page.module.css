@@ -1,0 +1,171 @@
+.section {
+  margin-top: 64px;
+  scroll-margin-top: 40px;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 14px;
+}
+
+.title {
+  color: var(--ink-soft);
+  font: italic 400 24px/1.2 var(--font-newsreader), Georgia, serif;
+}
+
+.aside, .category, .period, .role {
+  color: var(--ink-soft);
+  font: 400 14px/1.5 var(--font-newsreader), Georgia, serif;
+}
+
+.aside { font-size: 14px; }
+
+.group {
+  position: relative;
+  padding: 32px 0 28px;
+}
+
+.group::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(101 98 95 / .2), rgb(101 98 95 / .06));
+  content: "";
+  transform-origin: left;
+}
+
+.category { padding-top: 8px; font-size: 14px; }
+.groupBody { min-width: 0; margin-top: 20px; }
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 14px;
+  margin: 0 0 22px -8px;
+  padding: 0;
+  list-style: none;
+}
+
+.tool {
+  display: flex;
+  width: 70px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  text-align: center;
+  text-decoration: none;
+}
+
+.mark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  color: #76776d;
+  transition: color 250ms ease, background 250ms ease, border-color 250ms ease, transform 400ms cubic-bezier(.2,.8,.2,1);
+}
+
+.mark svg { width: 27px; height: 27px; fill: currentColor; }
+
+.toolName {
+  max-width: 76px;
+  font: 400 13px/1.45 var(--font-newsreader), Georgia, serif;
+  transition: color 250ms ease;
+}
+
+.tool:focus-visible { outline: 1px solid var(--ink); outline-offset: 6px; }
+.tool:focus-visible .mark { color: var(--brand); background: #eeeee8; transform: translateY(-4px); }
+.tool:focus-visible .toolName { color: var(--ink); }
+
+@media (hover: hover) {
+  .tool:hover .mark {
+    border-color: rgb(101 98 95 / .09);
+    background: #eeeee8;
+    color: var(--brand);
+    transform: translateY(-5px) rotate(-5deg);
+  }
+  .tools li:nth-child(even) .tool:hover .mark { transform: translateY(-5px) rotate(5deg); }
+  .tool:hover .toolName { color: var(--ink); }
+}
+
+.description, .contributions {
+  color: var(--ink-soft);
+  font: 400 16px/1.6 var(--font-newsreader), Georgia, serif;
+}
+
+.description { max-width: 455px; margin: 0; }
+
+.job {
+  position: relative;
+  padding: 32px 0 12px 23px;
+  border-left: 1px solid rgb(101 98 95 / .16);
+}
+
+.job::before {
+  position: absolute;
+  top: 40px;
+  left: -4px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  background: #99998a;
+  box-shadow: 0 0 0 1px rgb(101 98 95 / .2);
+  content: "";
+}
+
+.job:first-child::before { background: #7c8b61; box-shadow: 0 0 0 1px #7c8b6150, 0 0 0 4px #7c8b6109; }
+.job:last-child { padding-bottom: 0; }
+.period { font-size: 14px; }
+.jobBody { margin-top: 14px; }
+.jobBody:first-child { margin-top: 0; }
+.company { color: var(--ink); font: 400 21px/1.3 var(--font-newsreader), Georgia, serif; }
+.role { margin-top: 4px; }
+.contributions { display: grid; gap: 9px; margin-top: 18px; padding: 0; list-style: none; }
+
+@media (min-width: 701px) {
+  .section { margin-top: 96px; }
+  .group { display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 40px; padding: 34px 0; }
+  .groupBody, .jobBody { margin-top: 0; }
+  .jobBody { grid-column: 2; }
+  .job { display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 40px; padding: 32px 0 26px 23px; }
+  .period { padding-top: 4px; }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .group, .job {
+      animation: arrive linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+    .group::before {
+      animation: draw-rule linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes arrive {
+  from { opacity: .35; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes draw-rule {
+  from { transform: scaleX(.65); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark, .toolName { transition: none; }
+  .tool:hover .mark, .tool:focus-visible .mark, .tools li:nth-child(even) .tool:hover .mark { transform: none; }
+}

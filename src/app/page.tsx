@@ -1,44 +1,24 @@
 import Link from "next/link";
 import { HeroMeadow } from "@/components/hero/HeroMeadow";
-import { WORK } from "@/content/work";
+import WorkShowcase from "@/components/home/WorkShowcase";
+import { PROFILE } from "@/content/profile";
+import styles from "./page.module.css";
 
 export default function Home() {
   return (
     <div className="portfolio-home">
       <HeroMeadow />
 
-      <section id="work" className="portfolio-home-work mx-auto max-w-6xl px-4 py-20">
-        <div className="mb-10 flex items-end justify-between">
-          <h2 className="font-serif text-4xl italic">Selected projects</h2>
-          <Link href="/work" className="font-mono text-[11px] uppercase tracking-widest text-ink-soft hover:text-ink">
-            All work →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {WORK.slice(0, 4).map((w) => (
-            <Link
-              key={w.slug}
-              href={`/work/${w.slug}`}
-              className="group overflow-hidden rounded-xl border border-ink/10 bg-paper transition-shadow hover:shadow-lg"
-            >
-              <div className="h-56 w-full transition-transform duration-500 group-hover:scale-[1.02]" style={{ backgroundImage: w.cover }} />
-              <div className="p-5">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-serif text-2xl italic">{w.title}</h3>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">{w.year}</span>
-                </div>
-                <p className="mt-2 text-sm text-ink-soft">{w.summary}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+      <WorkShowcase />
+
+      <section className={styles.profileTeaser} aria-labelledby="profile-teaser-title">
+        <h2 id="profile-teaser-title"><Link href={PROFILE.homeTeaser.href}>{PROFILE.homeTeaser.title}</Link></h2>
+        <p>{PROFILE.homeTeaser.copy}</p>
       </section>
 
-      <footer className="border-t border-ink/10 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 text-center">
-          <p className="font-serif italic">Tan Luc</p>
-          <p className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">Software engineer</p>
-        </div>
+      <footer id="footer" className={styles.footer} aria-label="Site footer">
+        <span>© 2026 Tan Luc</span>
+        <a href="#">Back to top</a>
       </footer>
     </div>
   );

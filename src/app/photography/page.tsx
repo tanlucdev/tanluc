@@ -1,4 +1,5 @@
-import { readdir } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import type { Photo } from "@/content/misc";
@@ -7,7 +8,9 @@ import { PhotoGallery } from "@/components/PhotoGallery";
 export const metadata = { title: "Photography — Tan Luc" };
 
 const PHOTO_DIRECTORY = path.join(process.cwd(), "public/images/photo");
+const GENERATED_DIRECTORY = path.join(PHOTO_DIRECTORY, "generated");
 const IMAGE_FILE = /\.(avif|gif|jpe?g|png|webp)$/i;
+const variantName = (name: string) => `${createHash("sha256").update(name).digest("hex")}.webp`;
 
 const CAPTIONS: Record<string, string> = {
   "0B7B4AE2": "Sunset waves on the beach",
@@ -61,24 +64,27 @@ async function getPhotos(): Promise<Photo[]> {
   const entries = await readdir(PHOTO_DIRECTORY, { withFileTypes: true });
   const basePath = process.env.GITHUB_PAGES === "true" ? "/tanluc" : "";
 
-  return Promise.all(entries
+  const files = await Promise.all(entries
     .filter((entry) => entry.isFile() && IMAGE_FILE.test(entry.name))
-    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(async (entry) => ({ name: entry.name, size: (await stat(path.join(GENERATED_DIRECTORY, "thumbnail", variantName(entry.name)))).size })));
+
+  return Promise.all(files
+    .sort((a, b) => a.size - b.size || a.name.localeCompare(b.name))
     .map(async (entry) => {
       const title = CAPTIONS[entry.name.replace(IMAGE_FILE, "")] ?? CAPTIONS[entry.name.split("-")[0]] ?? toTitle(entry.name);
-      const image = sharp(path.join(PHOTO_DIRECTORY, entry.name));
+      const image = sharp(path.join(GENERATED_DIRECTORY, "full", variantName(entry.name)));
       const [metadata, [r, g, b]] = await Promise.all([image.metadata(), image.clone().resize(1, 1).removeAlpha().toColourspace("srgb").raw().toBuffer()]);
-      const rotated = (metadata.orientation ?? 0) >= 5;
       const style = /church|building|staircase|courtyard|hallway|architectur/i.test(title) ? "Architecture"
         : /sunset|sky|forest|blossom|ocean|lake|beach|leaves/i.test(title) ? "Nature" : "Everyday life";
 
       return {
         title,
         place: "Photography",
-        src: `${basePath}/images/photo/${encodeURIComponent(entry.name)}`,
+        src: `${basePath}/images/photo/generated/full/${variantName(entry.name)}`,
+        thumbnail: `${basePath}/images/photo/generated/thumbnail/${variantName(entry.name)}`,
         tags: [style, entry.name, /sunset|setting sun|evening sky/i.test(title) ? "sunsets hoang hon" : "", /city|street|building/i.test(title) ? "city urban" : "", /cafe|matcha/i.test(title) ? "coffee cafe ca phe" : ""],
-        width: (rotated ? metadata.height : metadata.width) ?? 1,
-        height: (rotated ? metadata.width : metadata.height) ?? 1,
+        width: metadata.width ?? 1,
+        height: metadata.height ?? 1,
         color: (Math.atan2(Math.sqrt(3) * (g - b), 2 * r - g - b) + Math.PI * 2) % (Math.PI * 2),
         style,
       };

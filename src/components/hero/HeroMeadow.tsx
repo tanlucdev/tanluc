@@ -14,11 +14,14 @@ const activityCube = {
 
 const clamp = (value: number, minimum: number, maximum: number) => Math.max(minimum, Math.min(maximum, value));
 const smootherstep = (value: number) => value * value * value * (value * (value * 6 - 15) + 10);
+let welcomePlayed = false;
+
+const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/home`;
 
 const actors = {
-  photo: { label: "Photography", frames: Array.from({ length: 5 }, (_, index) => `/images/home/photographer-frame-${index + 1}.png`), foot: 0.98, direction: 1, nativeFacing: 1, speed: 0, speedMin: 0, speedMax: 0, turnDuration: 0, tilt: 0, cadence: 14 },
-  bike: { label: "Cycling", frames: Array.from({ length: 3 }, (_, index) => `/images/home/bike-rider-frame-${index + 1}.png`), foot: 0.985, direction: 1, nativeFacing: 1, speed: 0.068, speedMin: 60, speedMax: 92, turnDuration: 260, tilt: 0.34, cadence: 9 },
-  walk: { label: "Backpacking", frames: Array.from({ length: 3 }, (_, index) => `/images/home/backpacker-frame-${index + 1}.png`), foot: 0.99, direction: -1, nativeFacing: -1, speed: 0.038, speedMin: 34, speedMax: 52, turnDuration: 240, tilt: 0.07, cadence: 9 },
+  photo: { label: "Photography", frames: Array.from({ length: 5 }, (_, index) => `${asset}/photographer-frame-${index + 1}.png`), foot: 0.98, direction: 1, nativeFacing: 1, speed: 0, speedMin: 0, speedMax: 0, turnDuration: 0, tilt: 0, cadence: 14 },
+  bike: { label: "Cycling", frames: Array.from({ length: 3 }, (_, index) => `${asset}/bike-rider-frame-${index + 1}.png`), foot: 0.985, direction: 1, nativeFacing: 1, speed: 0.068, speedMin: 60, speedMax: 92, turnDuration: 260, tilt: 0.34, cadence: 9 },
+  walk: { label: "Backpacking", frames: Array.from({ length: 3 }, (_, index) => `${asset}/backpacker-frame-${index + 1}.png`), foot: 0.99, direction: -1, nativeFacing: -1, speed: 0.038, speedMin: 34, speedMax: 52, turnDuration: 240, tilt: 0.07, cadence: 9 },
 } as const;
 
 function useMeadowTerrain() {
@@ -27,7 +30,7 @@ function useMeadowTerrain() {
   useEffect(() => {
     const image = new Image();
     image.decoding = "async";
-    image.src = "/images/home/grass.png";
+    image.src = `${asset}/grass.png`;
     image.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = image.naturalWidth;
@@ -76,7 +79,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
 
     const tree = new Image();
     tree.decoding = "async";
-    tree.src = "/images/home/tree.png";
+    tree.src = `${asset}/tree.png`;
     const grass = new Image();
     grass.decoding = "async";
     const texture = document.createElement("canvas");
@@ -111,6 +114,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     let gustAt = -Infinity;
     let gustDirection = 1;
     let gustCount = 0;
+    let welcomeGustAt = -Infinity;
     let treeBend = 0;
     let treeVelocity = 0;
     let treeTime = 0;
@@ -130,6 +134,10 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       cursor.style.opacity = "0";
     };
     const leaveWindow = (event: PointerEvent) => { if (!event.relatedTarget) hideCursor(); };
+    const welcomeGust = () => {
+      welcomeGustAt = performance.now();
+      treeCanvas.dataset.welcomeGust = "true";
+    };
 
     const paintBlade = (context: CanvasRenderingContext2D, blade: Blade, bend = 0, pressure = 0, direction = 1) => {
       const { x, y, width } = blade;
@@ -300,7 +308,9 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       cursor.dataset.state = phase === "blow" ? "blow" : "idle";
       cursor.dataset.phase = phase;
       const gustProgress = (time - gustAt) / 1500;
-      const force = !reducedMotion && gustProgress >= 0 && gustProgress <= 1 ? Math.sin(gustProgress * Math.PI) ** 2 * 0.13 * gustDirection : 0;
+      const welcomeProgress = (time - welcomeGustAt) / 1550;
+      const welcomeForce = !reducedMotion && welcomeProgress >= 0 && welcomeProgress <= 1 ? Math.sin(welcomeProgress * Math.PI) ** 1.5 * 0.09 : 0;
+      const force = (!reducedMotion && gustProgress >= 0 && gustProgress <= 1 ? Math.sin(gustProgress * Math.PI) ** 2 * 0.13 * gustDirection : 0) + welcomeForce;
       treeVelocity += ((force - treeBend) * 64 - treeVelocity * 8) * treeDelta;
       treeBend += treeVelocity * treeDelta;
       const wind = reducedMotion ? 0 : Math.sin(time / 1250) * 0.005 + treeBend;
@@ -370,7 +380,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       // ponytail: authored breeze; connect weather when live observations are available.
       windField.forEach((segment, index) => {
         const phase = time / 1000 * 0.73 - index / 64 * 4.2;
-        const force = reducedMotion ? 0 : 0.22 * (0.38 + Math.sin(phase * 2.1) * 0.12) + 0.28 * Math.max(0, Math.sin(phase)) ** 3 * 0.75;
+        const force = reducedMotion ? 0 : 0.22 * (0.38 + Math.sin(phase * 2.1) * 0.12) + 0.28 * Math.max(0, Math.sin(phase)) ** 3 * 0.75 + welcomeForce * (0.7 + Math.sin(index / 64 * Math.PI) * 0.3);
         segment.velocity += ((force * 1.1 - segment.bend) * 100 - segment.velocity * 12.5) * delta;
         segment.bend += segment.velocity * delta;
       });
@@ -428,11 +438,12 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     const observer = new ResizeObserver(resize);
     observer.observe(treeCanvas.parentElement!);
     grass.onload = () => { seedGrass(); if (reducedMotion) draw(0); };
-    grass.src = "/images/home/grass.png";
+    grass.src = `${asset}/grass.png`;
     tree.onload = () => { if (reducedMotion) draw(0); };
     window.addEventListener("pointermove", moveCursor, { passive: true });
     window.addEventListener("pointerout", leaveWindow);
     window.addEventListener("blur", hideCursor);
+    window.addEventListener("portfolio:welcome-gust", welcomeGust);
     resize();
     draw(0);
     return () => {
@@ -441,6 +452,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       window.removeEventListener("pointermove", moveCursor);
       window.removeEventListener("pointerout", leaveWindow);
       window.removeEventListener("blur", hideCursor);
+      window.removeEventListener("portfolio:welcome-gust", welcomeGust);
       delete treeCanvas.parentElement!.dataset.grassReady;
       observer.disconnect();
       cancelAnimationFrame(frame);
@@ -453,8 +465,8 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       <canvas aria-hidden="true" className="meadow-grass-canvas" ref={grassRef} />
       <div aria-hidden="true" className="meadow-cursor" data-state="idle" data-phase="off" ref={cursorRef}>
         <span className="meadow-cursor__direction">
-          <img alt="" draggable="false" className="meadow-cursor__idle" src="/images/home/pet/idle.png" />
-          <img alt="" draggable="false" className="meadow-cursor__blow" src="/images/home/pet/strained.png" />
+          <img alt="" draggable="false" className="meadow-cursor__idle" src={`${asset}/pet/idle.png`} />
+          <img alt="" draggable="false" className="meadow-cursor__blow" src={`${asset}/pet/strained.png`} />
         </span>
       </div>
     </>
@@ -611,6 +623,7 @@ function MeadowActor({ activity, active, buttonRefs, sceneRef, terrain }: {
 export function HeroMeadow() {
   const [active, setActive] = useState<Record<Activity, boolean>>({ photo: false, bike: false, walk: false });
   const [clock, setClock] = useState("");
+  const [windActive, setWindActive] = useState(false);
   const pointer = useRef<Pointer>({ x: 0, y: 0, active: false });
   const sceneRef = useRef<HTMLDivElement>(null);
   const buttonRefs = useRef<Record<Activity, HTMLButtonElement | null>>({ photo: null, bike: null, walk: null });
@@ -621,6 +634,12 @@ export function HeroMeadow() {
     updateClock();
     const interval = window.setInterval(updateClock, 60_000);
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const dismissWind = () => setWindActive(false);
+    window.addEventListener("portfolio:welcome-gust-ended", dismissWind);
+    return () => window.removeEventListener("portfolio:welcome-gust-ended", dismissWind);
   }, []);
 
   useEffect(() => {
@@ -659,7 +678,9 @@ export function HeroMeadow() {
         scene.style.setProperty(`--meadow-dissolve-edge-${index + 1}`, `${(dissolveEdge + offset).toFixed(2)}%`);
       });
       work.style.setProperty("--work-paper-opacity", meadowFade.toFixed(4));
-      scene.dataset.scrollState = current <= 0.002 ? "hero" : current >= 0.998 ? "hidden" : "transitioning";
+      const scrollState = current <= 0.002 ? "hero" : current >= 0.998 ? "hidden" : "transitioning";
+      if (scene.dataset.scrollState === "hero" && scrollState !== "hero") window.dispatchEvent(new Event("portfolio:welcome-gust-stop"));
+      scene.dataset.scrollState = scrollState;
     };
 
     const measure = () => {
@@ -708,6 +729,7 @@ export function HeroMeadow() {
     reducedMotion.addEventListener("change", update);
     return () => {
       cancelAnimationFrame(animation);
+      window.dispatchEvent(new Event("portfolio:welcome-gust-stop"));
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       window.visualViewport?.removeEventListener("resize", update);
@@ -716,8 +738,33 @@ export function HeroMeadow() {
     };
   }, []);
 
+  const welcomeGust = (trusted: boolean) => {
+    const scene = sceneRef.current;
+    if (
+      !trusted
+      || !scene
+      || scene.dataset.scrollState !== "hero"
+      || document.hidden
+      || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      || welcomePlayed
+    ) return;
+    try {
+      if (sessionStorage.getItem("portfolio:welcome-gust")) return;
+      sessionStorage.setItem("portfolio:welcome-gust", "1");
+    } catch {
+      // Session storage can be disabled; keep the one-shot gate in memory.
+    }
+    welcomePlayed = true;
+    const startedAt = performance.now();
+    setWindActive(true);
+    window.dispatchEvent(new CustomEvent("portfolio:welcome-gust", { detail: { startedAt } }));
+    window.dispatchEvent(new CustomEvent("portfolio:welcome-gust-sound", { detail: { startedAt, trusted: true } }));
+  };
+
   return (
-    <section aria-labelledby="intro-title" className="meadow-hero" onPointerLeave={() => { pointer.current.active = false; }} onPointerMove={(event) => {
+    <section aria-labelledby="intro-title" className="meadow-hero" onKeyDown={(event) => {
+      if (event.key === "Enter" || event.key === " ") welcomeGust(event.nativeEvent.isTrusted);
+    }} onPointerDown={(event) => welcomeGust(event.nativeEvent.isTrusted)} onPointerLeave={() => { pointer.current.active = false; }} onPointerMove={(event) => {
       const bounds = event.currentTarget.getBoundingClientRect();
       pointer.current = { x: (event.clientX - bounds.left) / bounds.width - 0.5, y: (event.clientY - bounds.top) / bounds.height - 0.5, active: true };
     }}>
@@ -729,8 +776,8 @@ export function HeroMeadow() {
           <span className="meadow-activities">
             {(Object.keys(actors) as Activity[]).map((activity) => (
               <button aria-label={`${active[activity] ? "Hide" : "Show"} ${actors[activity].label.toLowerCase()} on the meadow`} aria-pressed={active[activity]} className={`meadow-token meadow-token--${activity}`} key={activity} onClick={() => setActive((current) => ({ ...current, [activity]: !current[activity] }))} ref={(element) => { buttonRefs.current[activity] = element; }} type="button">
-                <img className="meadow-token__rest" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].rest}`} />
-                <img className="meadow-token__selected" alt="" draggable="false" src={`/images/home/activities/${activityCube[activity].selected}`} />
+                <img className="meadow-token__rest" alt="" draggable="false" src={`${asset}/activities/${activityCube[activity].rest}`} />
+                <img className="meadow-token__selected" alt="" draggable="false" src={`${asset}/activities/${activityCube[activity].selected}`} />
               </button>
             ))}
           </span>
@@ -738,12 +785,13 @@ export function HeroMeadow() {
       </div>
 
       <div className={`meadow-scene ${active.photo ? "is-photo-active" : ""}`} ref={sceneRef}>
-        <div aria-hidden="true" className="meadow-ground"><img alt="" draggable="false" src="/images/home/grass.png" /></div>
+        <div aria-hidden="true" className="meadow-ground"><img alt="" draggable="false" src={`${asset}/grass.png`} /></div>
         <MeadowCanvas pointer={pointer} terrain={terrain} />
         <MeadowActor activity="photo" active={active.photo} buttonRefs={buttonRefs} sceneRef={sceneRef} terrain={terrain} />
         <MeadowActor activity="bike" active={active.bike} buttonRefs={buttonRefs} sceneRef={sceneRef} terrain={terrain} />
         <MeadowActor activity="walk" active={active.walk} buttonRefs={buttonRefs} sceneRef={sceneRef} terrain={terrain} />
         <div className="meadow-weather" aria-live="polite"><strong>Gentle breeze in Ho Chi Minh City right now</strong><span>{clock || "Local time"} · 8 km/h SW wind</span></div>
+        {windActive && <button aria-label="Mute meadow wind" onClick={() => { window.dispatchEvent(new Event("portfolio:welcome-gust-stop")); setWindActive(false); }} style={{ appearance: "none", background: "rgb(25 35 12 / 0.65)", border: "1px solid rgb(255 255 255 / 0.55)", borderRadius: 999, bottom: "calc(3% + 48px)", color: "white", cursor: "pointer", font: "12px var(--font-geist-sans), system-ui, sans-serif", minHeight: 44, minWidth: 44, padding: "8px 12px", position: "absolute", right: "clamp(10px, 1.6vw, 28px)", textDecoration: "underline", zIndex: 5 }} type="button">Mute wind</button>}
       </div>
     </section>
   );
