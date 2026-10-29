@@ -1,24 +1,9 @@
 import { RecentGallery } from "@/components/about/RecentGallery";
+import { PROFILE } from "@/content/profile";
+import type { CSSProperties } from "react";
+import styles from "./page.module.css";
 
 export const metadata = { title: "About - Tan Luc" };
-
-const SIDE_QUESTS = [
-  {
-    art: "h-[132px] w-[208px] border border-[#beab91] bg-[#e8e0d1] shadow-[0_8px_18px_rgba(47,45,40,0.1)]",
-    title: "Glean Passport",
-    copy: "A little record of the work and people that have shaped my practice.",
-  },
-  {
-    art: "h-40 w-24 rounded-[18px] border-x-[3px] border-[#b77f60] bg-[#e6b08f]",
-    title: "The Underwallet",
-    copy: "A hands-on experiment in making something useful from a flat piece of leather.",
-  },
-  {
-    art: "h-[148px] w-[228px] border border-[#698357] bg-[#88a96f]",
-    title: "CafeMaps",
-    copy: "A small guide to finding good coffee around Ho Chi Minh City.",
-  },
-];
 
 export default function About() {
   const basePath = process.env.GITHUB_PAGES === "true" ? "/tanluc" : "";
@@ -37,23 +22,23 @@ export default function About() {
             </p>
           </div>
           <nav aria-label="Professional links" className="mt-7 flex items-center gap-[18px] text-ink-soft">
-            <button aria-label="GitHub" className="grid size-4 cursor-pointer place-items-center rounded-sm outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" type="button">
+            <a aria-label="GitHub" className="grid size-4 place-items-center rounded-sm outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" href="https://github.com/tanlucdev" rel="noreferrer" target="_blank">
               <svg aria-hidden="true" className="size-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.18-3.37-1.18-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.61.07-.61 1 .07 1.54 1.04 1.54 1.04.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.55 9.55 0 0 1 12 6.8c.85 0 1.7.12 2.5.34 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.95.36.31.68.91.68 1.84v2.73c0 .26.18.57.69.48A10 10 0 0 0 12 2Z" />
               </svg>
-            </button>
-            <button aria-label="LinkedIn" className="grid size-4 cursor-pointer place-items-center rounded-sm outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" type="button">
+            </a>
+            <a aria-label="LinkedIn" className="grid size-4 place-items-center rounded-sm outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" href="https://www.linkedin.com/in/tanlucdev" rel="noreferrer" target="_blank">
               <svg aria-hidden="true" className="size-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M20.45 20.45H16.9v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13Zm1.78 13.02H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
               </svg>
-            </button>
+            </a>
             <span aria-hidden="true" className="h-6 w-px bg-ink/15" />
-            <button className="flex cursor-pointer items-center gap-1.5 rounded-sm font-sans text-base leading-none outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" type="button">
+            <a className="flex items-center gap-1.5 rounded-sm font-sans text-base leading-none outline-offset-4 focus-visible:outline-2 focus-visible:outline-ink" href={`${basePath}${PROFILE.resumePath}`} rel="noreferrer" target="_blank">
               <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 24 24">
                 <path d="M14 3H7.5A2.5 2.5 0 0 0 5 5.5v13A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V8zM14 3v3.5A1.5 1.5 0 0 0 15.5 8H19M9 13h6M9 16.5h4" stroke="currentColor" strokeWidth="1.5" />
               </svg>
               Resume
-            </button>
+            </a>
           </nav>
         </div>
 
@@ -68,16 +53,48 @@ export default function About() {
         <RecentGallery basePath={basePath} />
       </section>
 
-      <section className="mt-16 min-[701px]:mt-24">
-        <h2 className="mb-8 font-serif text-[24px] leading-[1.2] italic text-ink-soft">Side quests</h2>
-        <div className="grid gap-10 min-[701px]:grid-cols-3">
-          {SIDE_QUESTS.map((quest) => (
-            <article key={quest.title}>
-              <div className="flex aspect-[1.6] items-center justify-center">
-                <div aria-label={`${quest.title} artwork placeholder`} className={quest.art} role="img" />
+      <section id="how-i-build" className={styles.section} aria-labelledby="stack-title">
+        <header className={styles.heading}>
+          <h2 id="stack-title" className={styles.title}>How I build</h2>
+          <p className={styles.aside}>The tools behind the work</p>
+        </header>
+        <div>
+          {PROFILE.stack.map((group) => (
+            <article key={group.label} className={styles.group}>
+              <h3 className={styles.category}>{group.label}</h3>
+              <div className={styles.groupBody}>
+                <ul className={styles.tools} aria-label={`${group.label} tools`}>
+                  {group.technologies.map((tool) => (
+                    <li key={tool.name}>
+                      <a className={styles.tool} href={tool.href} target="_blank" rel="noreferrer" style={{ "--brand": tool.color } as CSSProperties}>
+                        <span className={styles.mark}>
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href={`${basePath}/images/stack.svg#${tool.icon}`} /></svg>
+                        </span>
+                        <span className={styles.toolName}>{tool.name}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p className={styles.description}>{group.description}</p>
               </div>
-              <h3 className="mt-7 mb-2 font-serif text-[20px] leading-[1.3] text-ink-soft">{quest.title}</h3>
-              <p className="font-serif text-[16px] leading-[1.5] text-ink-soft/80">{quest.copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="experience-title">
+        <h2 id="experience-title" className={styles.title}>Experience</h2>
+        <div>
+          {PROFILE.experience.map((job) => (
+            <article key={job.company} className={styles.job}>
+              {job.period && <p className={styles.period}>{job.period}</p>}
+              <div className={styles.jobBody}>
+                <h3 className={styles.company}>{job.company}</h3>
+                {job.role && <p className={styles.role}>{job.role}</p>}
+                {job.contributions.length > 0 && <ul className={styles.contributions}>
+                  {job.contributions.map((contribution) => <li key={contribution}>{contribution}</li>)}
+                </ul>}
+              </div>
             </article>
           ))}
         </div>

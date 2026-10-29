@@ -5,7 +5,7 @@ import { PhotoLightbox } from "@/components/PhotoLightbox";
 
 const PHOTOS = [
   { file: "in-forest.jpeg", label: "Night under the stars", angle: -5 },
-  { file: "D1206F12-1559-4466-808D-7528942C5269_1_201_a.png", label: "A good day to ride", angle: -4 },
+  { file: "sunset-xuan-huong-lake.jpeg", label: "Sunset on Xuan Huong Lake", angle: -4 },
   { file: "sunset.jpeg", label: "A beautiful sunset", angle: 0 },
   { file: "0B7B4AE2-F505-46AC-B4FD-3A29D8341B11_1_105_c.jpeg", label: "Out with the crew", angle: 2 },
   { file: "D820E315-C384-4352-85DF-2D7401F30A87_1_105_c.jpeg", label: "Parked for a minute", angle: -4 },
@@ -33,13 +33,15 @@ export function RecentGallery({ basePath = "" }: { basePath?: string }) {
         <div className="flex items-start gap-5 min-[701px]:items-end min-[701px]:gap-0">
           {PHOTOS.map((item, index) => (
             <figure
-              className="recent-print group/print relative h-[210px] w-[140px] shrink-0 snap-start min-[701px]:aspect-[2/3] min-[701px]:h-auto min-[701px]:w-[calc(9.09091%+7.27273px)] min-[701px]:-ml-2 min-[701px]:first:ml-0 min-[701px]:hover:z-20 min-[701px]:focus-within:z-20"
+              className={`recent-print group/print relative h-[210px] w-[140px] shrink-0 snap-start min-[701px]:aspect-[2/3] min-[701px]:h-auto min-[701px]:w-[calc(9.09091%+7.27273px)] min-[701px]:-ml-2 min-[701px]:first:ml-0 ${highlighted === index ? "min-[701px]:z-20" : ""}`}
               key={item.label}
-              data-dismissed={dismissed || undefined}
-              onPointerMove={() => setDismissed(false)}
+              data-dismissed={highlighted !== index || undefined}
               onKeyDown={() => setDismissed(false)}
-              onMouseEnter={() => setHovered(index)}
-              onMouseLeave={() => setHovered(null)}
+              onMouseEnter={(event) => {
+                if (dismissed && event.currentTarget.contains(document.activeElement)) return;
+                setDismissed(false); setFocused(null); setHovered(index);
+              }}
+              onMouseLeave={() => { setHovered(null); setFocused(null); setDismissed(false); }}
             >
               <div className="size-full min-[701px]:origin-bottom min-[701px]:[transform:rotate(var(--angle))]" style={{ "--angle": `${item.angle}deg` } as CSSProperties}>
               <button
