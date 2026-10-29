@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CinematicWorkflow from "@/components/work/CinematicWorkflow";
 import { WORK } from "@/content/work";
 
 export function generateStaticParams() {
@@ -27,10 +28,17 @@ export default async function CaseStudy({
       <p className="mt-3 font-mono text-[11px] uppercase tracking-widest text-ink-soft">
         {study.client} · {study.year} · {study.role}
       </p>
-      <div
-        className="mt-8 h-80 w-full rounded-xl border border-ink/10"
-        style={{ backgroundImage: study.cover }}
-      />
+      {study.slug === "dynamic-model" ? <CinematicWorkflow /> : <div className="mt-8 h-80 w-full rounded-xl border border-ink/10" style={{ backgroundImage: study.cover }} />}
+      {study.url && (
+        <a
+          className="mt-5 inline-flex border-b border-ink/30 pb-1 font-mono text-[11px] uppercase tracking-widest text-ink-soft transition-colors hover:border-ink hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          href={study.url}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Visit project ↗
+        </a>
+      )}
       <p className="mt-8 font-serif text-xl italic leading-relaxed">{study.summary}</p>
       {study.sections.map((s) => (
         <section key={s.heading} className="mt-10">

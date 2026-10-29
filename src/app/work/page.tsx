@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CinematicWorkflow from "@/components/work/CinematicWorkflow";
 import { WORK } from "@/content/work";
 
 export const metadata = { title: "Work — Tan Luc" };
@@ -18,10 +19,7 @@ export default function WorkIndex() {
             href={`/work/${w.slug}`}
             className={`group grid grid-cols-1 gap-6 md:grid-cols-2 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}
           >
-            <div
-              className="h-64 rounded-xl border border-ink/10 transition-transform duration-500 group-hover:scale-[1.01]"
-              style={{ backgroundImage: w.cover }}
-            />
+            {w.slug === "dynamic-model" ? <div className="h-64 overflow-hidden rounded-xl border border-ink/10 transition-transform duration-500 group-hover:scale-[1.01]"><CinematicWorkflow compact /></div> : <div className="h-64 rounded-xl border border-ink/10 transition-transform duration-500 group-hover:scale-[1.01]" style={{ backgroundImage: w.cover }} />}
             <div className="flex flex-col justify-center">
               <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
                 {w.client} · {w.year} · {w.role}
