@@ -4,7 +4,7 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright")
 const base = process.env.BASE_URL || "http://localhost:3000";
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
   try {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     const errors = [];
@@ -21,12 +21,20 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     await page.locator('.photo-gallery[data-ready="true"]').waitFor();
     const total = await page.locator(".photo-result").count();
     assert(total > 0);
+    assert.match(await page.locator(".photo-result img").first().getAttribute("src"), /\/generated\/thumbnail\/[a-f0-9]{64}\.webp$/);
     const search = page.getByRole("searchbox");
+    const heightBeforeFilter = await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height);
     await search.fill("sunsets");
     await page.waitForFunction(() => document.querySelector('[role="status"]').textContent.includes("matching sunsets"));
     const falling = await page.locator('.photo-result[data-visible="false"]').first().evaluate((element) => element.getAnimations().map((animation) => animation.effect.getKeyframes()));
     assert(falling.some((frames) => frames.some((frame) => /rotate/.test(frame.transform))), "Filtered photos must fall and rotate");
-    await page.waitForTimeout(900);
+    const fallTiming = await page.locator('.photo-result[data-visible="false"]').first().evaluate((element) => element.getAnimations()[0].effect.getTiming());
+    assert(fallTiming.duration >= 600 && fallTiming.duration <= 690, "Fall lasts 600-690ms");
+    assert((await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height)) >= heightBeforeFilter, "Grid holds its old height while photos fall");
+    const survivorDelay = await page.locator('.photo-result[data-visible="true"]').first().evaluate((element) => element.getAnimations()[0]?.effect.getTiming().delay ?? 0);
+    assert(survivorDelay >= 780, "Survivors reflow after the fall and 180ms gap");
+    await page.waitForTimeout(1600);
+    assert((await page.locator(".photo-gallery").evaluate((element) => element.getBoundingClientRect().height)) < heightBeforeFilter, "Grid shrinks after animation completes");
     const selected = page.locator('.photo-result[data-visible="true"]');
     assert(await selected.count() > 0 && await selected.count() < total);
     assert.equal(await page.locator('.photo-result[data-visible="false"]').first().getAttribute("tabindex"), "-1");
@@ -34,6 +42,11 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     const title = await first.getAttribute("aria-label");
     await first.click();
     assert(await page.getByRole("dialog").evaluate((dialog) => dialog.matches(":modal")));
+    assert.match(await page.locator(".photo-lightbox__full").getAttribute("src"), /\/generated\/full\/[a-f0-9]{64}\.webp$/);
+    assert(await page.locator(".photo-lightbox__media").evaluate((element) => {
+      const style = getComputedStyle(element);
+      return style.padding === "0px" && style.borderWidth === "0px" && style.backgroundColor === "rgba(0, 0, 0, 0)" && style.boxShadow === "none";
+    }), "Photography lightbox has no frame");
     assert(await page.locator(".photo-lightbox__media").evaluate((element) => element.getAnimations().length > 0), "Photo must zoom from its thumbnail");
     assert.equal(await page.locator(".photo-lightbox__media").evaluate((element) => element.getAnimations()[0].effect.getKeyframes()[0].opacity), "1", "Zoom starts at the visible thumbnail");
     await page.waitForTimeout(650);
@@ -51,8 +64,14 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     await search.fill("no-matching-photos-xyz");
     await page.getByText("No photographs found.", { exact: true }).waitFor();
     await page.getByRole("button", { name: "Clear", exact: true }).click();
+    assert.equal(await page.evaluate(() => document.activeElement.getAttribute("aria-label")), "Search photographs");
     await page.waitForFunction((count) => document.querySelectorAll('.photo-result[data-visible="true"]').length === count, total);
-    await page.waitForTimeout(900);
+    const returning = await page.locator('.photo-result[data-visible="true"]').first().evaluate((element) => element.getAnimations().flatMap((animation) => animation.effect.getKeyframes()));
+    assert(returning.some((frame) => frame.transform === "translateY(72px)" && !/rotate/.test(frame.transform)), "Returning photos rise without rotation");
+    await search.fill("nature");
+    await search.fill("city");
+    await page.waitForFunction(() => document.querySelector('[role="status"]').textContent.includes("matching city"));
+    assert.equal(await page.locator(".photo-result[data-silent-hover='true']").count(), total);
     for (const option of ["Color", "Photography style", "Selected work"]) {
       await page.locator(".photo-sort summary").click();
       await page.getByRole("button", { name: option, exact: true }).click();
@@ -78,7 +97,7 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     await page.getByRole("dialog").waitFor({ state: "detached" });
     assert.equal(await page.evaluate(() => document.documentElement.style.overflow), "");
     assert.deepEqual(errors, []);
-    console.log("PASS: home overflow, masonry, search fall/return, sorting, zoom, keyboard/focus, mobile, reduced motion");
+    console.log("PASS: home overflow, masonry, staged search fall/reflow/return, fast input, sorting, zoom, keyboard/focus, mobile, reduced motion");
   } finally {
     await browser.close();
   }

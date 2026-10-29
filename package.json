@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/convert-heic.mjs",
-    "prebuild": "node scripts/convert-heic.mjs",
+    "predev": "node scripts/generate-photo-variants.mjs",
+    "prebuild": "node scripts/generate-photo-variants.mjs",
     "photos:convert": "node scripts/convert-heic.mjs",
+    "photos:generate": "node scripts/generate-photo-variants.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
