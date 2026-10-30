@@ -482,6 +482,7 @@ function MeadowActor({ activity, active, buttonRefs, sceneRef, terrain }: {
 }) {
   const actorRef = useRef<HTMLSpanElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const initiallyVisible = useRef(active && activity === "photo");
   const profile = actors[activity];
 
   useEffect(() => {
@@ -491,122 +492,178 @@ function MeadowActor({ activity, active, buttonRefs, sceneRef, terrain }: {
     if (!actor || !image || !scene) return;
 
     if (!active) {
+      initiallyVisible.current = false;
       actor.style.opacity = "0";
       actor.dataset.phase = "idle";
       actor.dataset.turning = "false";
+      actor.dataset.spriteState = "idle";
       return;
     }
 
-    let sceneBounds = scene.getBoundingClientRect();
     const buttonBounds = buttonRefs.current[activity]?.getBoundingClientRect();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let actorWidth = actor.offsetWidth;
-    let actorHeight = actor.offsetHeight;
-    const startX = buttonBounds ? buttonBounds.left + buttonBounds.width / 2 - sceneBounds.left : sceneBounds.width / 2;
-    let x = clamp(startX, actorWidth / 2, sceneBounds.width - actorWidth / 2);
-    let y = buttonBounds ? buttonBounds.top + buttonBounds.height / 2 - sceneBounds.top - actorHeight / 2 : -actorHeight;
-    let velocity = 0;
-    let direction = profile.direction;
-    let turnUntil = 0;
-    let distance = 0;
-    let phase: "spawn" | "drop" | "land" | "move" | "shoot" = reducedMotion ? (activity === "photo" ? "shoot" : "move") : "spawn";
-    let phaseAt = performance.now();
-    let previous = phaseAt;
-    let currentFrame = -1;
-    let animation = 0;
+    const startsOnGround = reducedMotion || initiallyVisible.current;
+    const run = () => {
+      let sceneBounds = scene.getBoundingClientRect();
+      let actorWidth = actor.offsetWidth;
+      let actorHeight = actor.offsetHeight;
+      const startX = buttonBounds ? buttonBounds.left + buttonBounds.width / 2 - sceneBounds.left : sceneBounds.width / 2;
+      let x = clamp(startX, actorWidth / 2, sceneBounds.width - actorWidth / 2);
+      let y = buttonBounds ? buttonBounds.top + buttonBounds.height / 2 - sceneBounds.top - actorHeight / 2 : -actorHeight;
+      let velocity = 0;
+      let direction = profile.direction;
+      let turnUntil = 0;
+      let distance = 0;
+      let phase: "spawn" | "drop" | "land" | "move" | "shoot" = startsOnGround ? (activity === "photo" ? "shoot" : "move") : "spawn";
+      let phaseAt = performance.now();
+      let previous = phaseAt;
+      let currentFrame = -1;
+      let animation = 0;
 
-    const resize = () => {
-      sceneBounds = scene.getBoundingClientRect();
-      actorWidth = actor.offsetWidth;
-      actorHeight = actor.offsetHeight;
-      x = clamp(x, actorWidth / 2, sceneBounds.width - actorWidth / 2);
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(scene);
-    observer.observe(actor);
+      const resize = () => {
+        sceneBounds = scene.getBoundingClientRect();
+        actorWidth = actor.offsetWidth;
+        actorHeight = actor.offsetHeight;
+        x = clamp(x, actorWidth / 2, sceneBounds.width - actorWidth / 2);
+      };
+      const observer = new ResizeObserver(resize);
+      observer.observe(scene);
+      observer.observe(actor);
 
-    const groundAt = (position: number) => terrain.current.yAt(position, sceneBounds.width, sceneBounds.height);
-    const targetY = () => groundAt(x) - actorHeight * profile.foot;
-    const setFrame = (index: number) => {
-      const nextFrame = index % profile.frames.length;
-      if (nextFrame === currentFrame) return;
-      currentFrame = nextFrame;
-      image.src = profile.frames[nextFrame];
-    };
-    const draw = (now: number) => {
-      const elapsed = now - phaseAt;
-      const delta = Math.min(0.034, Math.max(0.001, (now - previous) / 1000));
-      previous = now;
-      let scale = 1;
-      let angle = 0;
+      const groundAt = (position: number) => terrain.current.yAt(position, sceneBounds.width, sceneBounds.height);
+      const targetY = () => groundAt(x) - actorHeight * profile.foot;
+      const setFrame = (index: number) => {
+        const nextFrame = index % profile.frames.length;
+        if (nextFrame === currentFrame) return;
+        currentFrame = nextFrame;
+        image.src = profile.frames[nextFrame];
+      };
+      const draw = (now: number) => {
+        const elapsed = now - phaseAt;
+        const delta = Math.min(0.034, Math.max(0.001, (now - previous) / 1000));
+        previous = now;
+        let scale = 1;
+        let angle = 0;
 
-      if (phase === "spawn") {
-        scale = 0.08 + Math.min(1, elapsed / 220) * 0.92;
-        if (elapsed >= 220) {
-          phase = "drop";
-          phaseAt = now;
-          velocity = -18;
-        }
-      } else if (phase === "drop") {
-        velocity += Math.max(980, sceneBounds.height * 2.15) * delta;
-        y += velocity * delta;
-        if (y >= targetY()) {
+        if (phase === "spawn") {
+          scale = 0.08 + Math.min(1, elapsed / 220) * 0.92;
+          if (elapsed >= 220) {
+            phase = "drop";
+            phaseAt = now;
+            velocity = -18;
+          }
+        } else if (phase === "drop") {
+          velocity += Math.max(980, sceneBounds.height * 2.15) * delta;
+          y += velocity * delta;
+          if (y >= targetY()) {
+            y = targetY();
+            velocity = 0;
+            phase = "land";
+            phaseAt = now;
+          }
+        } else if (phase === "land") {
           y = targetY();
-          velocity = 0;
-          phase = "land";
-          phaseAt = now;
-        }
-      } else if (phase === "land") {
-        y = targetY();
-        if (elapsed >= 170) {
-          phase = activity === "photo" ? "shoot" : "move";
-          phaseAt = now;
-        }
-      } else if (phase === "shoot") {
-        y = targetY();
-        setFrame(Math.floor((now - phaseAt) / 900));
-      } else {
-        const edge = actorWidth * 0.54;
-        const speed = clamp(sceneBounds.width * profile.speed, profile.speedMin, profile.speedMax);
-        if (turnUntil && now < turnUntil) {
+          if (elapsed >= 170) {
+            phase = activity === "photo" ? "shoot" : "move";
+            phaseAt = now;
+          }
+        } else if (phase === "shoot") {
           y = targetY();
+          setFrame(Math.floor((now - phaseAt) / 900));
         } else {
-          if (turnUntil) {
-            turnUntil = 0;
-            actor.dataset.turning = "false";
+          const edge = actorWidth * 0.54;
+          const speed = clamp(sceneBounds.width * profile.speed, profile.speedMin, profile.speedMax);
+          if (turnUntil && now < turnUntil) {
+            y = targetY();
+          } else {
+            if (turnUntil) {
+              turnUntil = 0;
+              actor.dataset.turning = "false";
+            }
+            x += direction * speed * delta;
+            distance += speed * delta;
+            if (x >= sceneBounds.width - edge || x <= edge) {
+              x = clamp(x, edge, sceneBounds.width - edge);
+              direction *= -1;
+              turnUntil = now + profile.turnDuration;
+              actor.dataset.turning = "true";
+            }
           }
-          x += direction * speed * delta;
-          distance += speed * delta;
-          if (x >= sceneBounds.width - edge || x <= edge) {
-            x = clamp(x, edge, sceneBounds.width - edge);
-            direction *= -1;
-            turnUntil = now + profile.turnDuration;
-            actor.dataset.turning = "true";
-          }
+          const sample = Math.max(8, actorWidth * (activity === "bike" ? 0.18 : 0.2));
+          const slope = Math.atan2(groundAt(x + sample) - groundAt(x - sample), sample * 2);
+          angle = clamp(slope, -profile.tilt, profile.tilt);
+          y = targetY();
+          setFrame(Math.floor(distance / profile.cadence));
         }
-        const sample = Math.max(8, actorWidth * (activity === "bike" ? 0.18 : 0.2));
-        const slope = Math.atan2(groundAt(x + sample) - groundAt(x - sample), sample * 2);
-        angle = clamp(slope, -profile.tilt, profile.tilt);
-        y = targetY();
-        setFrame(Math.floor(distance / profile.cadence));
-      }
+
+        actor.dataset.phase = phase;
+        actor.dataset.direction = direction === 1 ? "right" : "left";
+        actor.style.opacity = "1";
+        actor.style.transform = `translate3d(${x - actorWidth / 2}px, ${y}px, 0) rotate(${angle}rad) scale(${scale})`;
+        actor.style.setProperty("--actor-facing", String(direction * profile.nativeFacing));
+        if (!reducedMotion) animation = requestAnimationFrame(draw);
+      };
 
       actor.dataset.phase = phase;
-      actor.dataset.direction = direction === 1 ? "right" : "left";
-      actor.style.opacity = "1";
-      actor.style.transform = `translate3d(${x - actorWidth / 2}px, ${y}px, 0) rotate(${angle}rad) scale(${scale})`;
-      actor.style.setProperty("--actor-facing", String(direction * profile.nativeFacing));
-      if (!reducedMotion) animation = requestAnimationFrame(draw);
+      actor.dataset.turning = "false";
+      setFrame(0);
+      if (startsOnGround) y = targetY();
+      draw(phaseAt);
+      return () => {
+        observer.disconnect();
+        cancelAnimationFrame(animation);
+      };
     };
 
-    actor.dataset.phase = "spawn";
-    actor.dataset.turning = "false";
-    setFrame(0);
-    if (reducedMotion) y = targetY();
-    draw(phaseAt);
+    if (reducedMotion) {
+      actor.dataset.spriteState = "static";
+      return run();
+    }
+
+    let cancelled = false;
+    let stop: (() => void) | undefined;
+    const frames: HTMLImageElement[] = [];
+    const preload = (src: string) => new Promise<void>((resolve, reject) => {
+      const frame = new Image();
+      frames.push(frame);
+      frame.decoding = "async";
+      frame.onload = () => { void frame.decode().then(resolve, reject); };
+      frame.onerror = () => reject(new Error(`Unable to load ${src}`));
+      frame.src = src;
+    });
+
+    actor.dataset.spriteState = "loading";
+    void Promise.all(profile.frames.map(preload)).then(() => {
+      if (cancelled) return;
+      actor.dataset.spriteState = "ready";
+      stop = run();
+    }, () => {
+      if (cancelled) return;
+      actor.dataset.spriteState = "fallback";
+      actor.dataset.phase = "idle";
+      if (!frames[0].naturalWidth) {
+        actor.style.opacity = "0";
+        return;
+      }
+      const sceneBounds = scene.getBoundingClientRect();
+      const actorWidth = actor.offsetWidth;
+      const actorHeight = actor.offsetHeight;
+      const startX = buttonBounds ? buttonBounds.left + buttonBounds.width / 2 - sceneBounds.left : sceneBounds.width / 2;
+      const x = clamp(startX, actorWidth / 2, sceneBounds.width - actorWidth / 2);
+      const y = terrain.current.yAt(x, sceneBounds.width, sceneBounds.height) - actorHeight * profile.foot;
+      actor.style.opacity = "1";
+      actor.style.transform = `translate3d(${x - actorWidth / 2}px, ${y}px, 0)`;
+      actor.style.setProperty("--actor-facing", String(profile.direction * profile.nativeFacing));
+      image.src = profile.frames[0];
+    });
     return () => {
-      observer.disconnect();
-      cancelAnimationFrame(animation);
+      cancelled = true;
+      stop?.();
+      for (const frame of frames) {
+        frame.onload = null;
+        frame.onerror = null;
+        frame.src = "";
+      }
     };
   }, [active, activity, buttonRefs, profile, sceneRef, terrain]);
 
@@ -621,7 +678,7 @@ function MeadowActor({ activity, active, buttonRefs, sceneRef, terrain }: {
 }
 
 export function HeroMeadow() {
-  const [active, setActive] = useState<Record<Activity, boolean>>({ photo: false, bike: false, walk: false });
+  const [active, setActive] = useState<Record<Activity, boolean>>({ photo: true, bike: false, walk: false });
   const [clock, setClock] = useState("");
   const [windActive, setWindActive] = useState(false);
   const pointer = useRef<Pointer>({ x: 0, y: 0, active: false });
