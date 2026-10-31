@@ -209,3 +209,47 @@ The browser check itself adds no dependency to the application. Work used
 `cx/gpt-5.6-luna` for read-only repository discovery and `cx/gpt-5.6-terra`
 with high effort for the single implementation stream. The Lead reviewed code,
 screenshots and actual check output before acceptance.
+
+### Canvas palette follow-up (2026-10-31)
+
+New REA CLI capture of `https://neelsaswade.com/#work-psychic`:
+`ev_a6e7d260fc8ea05c8c9a7ef7b0bfffce18ee2a70ee68f2261e70baa52f4ff14f`.
+Navigation, visible-work wait and screenshot completed; owned browser terminated.
+Full temporary record: `/tmp/neels-rea-work-palette.json`.
+
+Observed: light page, white primary media, pale gray secondary media, warm gray
+headings, subtle edges. Separately inspected shipped CSS declares secondary
+background `#ececec`, primary video background `#fff`, and 12px media corners.
+The palette supports media rather than coloring the entire composition.
+
+Design choice: replace the canvas's dark green palette with pale warm gray
+`#eeedeb`, white nodes, warm gray text and restrained brown selection accents.
+This applies only to the canvas CSS module; other sections retain their styling.
+Local REA overview capture at 1440 × 1000:
+`ev_692bd9364e2aab37ba74e4f4827b8c13aa85ab9db8e54597046175a30c79595d`.
+All steps completed. Record: `/tmp/canvas-rea-light-palette.json`.
+The local capture uses reduced motion to inspect a stable final frame; it does
+not establish animation or video playback behavior.
+
+### CJ video presentation follow-up (2026-10-31)
+
+REA captured `https://ai.cj.net/welcome-v2#demo`, clicked the Generate step,
+waited 2500ms and captured DOM/screenshot. Evidence:
+`ev_2f8ab599655401324f57ec309943dd7c723313a265d04716589fa22cc3e08b7a`.
+All steps completed; temporary record `/tmp/cj-rea-video-reveal.json`.
+Observed presentation: media lives inside individual canvas cards with node
+labels, rounded clipping and lightweight SVG connections. Separately inspected
+public CSS declares clipped media containers and staged progress/toolbar motion.
+
+Local design: keep the light portfolio palette, reveal the two supplied clips
+as separate results, then hide the properties panel to prioritize the videos.
+Properties appear only while a tool or model is selected in the scripted demo.
+`public/projects/cj/video-workflow` was an MP4 without a suffix; renamed to
+`video-workflow.mp4` for a correct static-server content type. Browser decoding
+confirmed both supplied clips are 1280 × 720 and six seconds long. Their poster
+images were extracted from the actual clips. Playback follows the walkthrough's
+pause, viewport visibility, document visibility and reduced-motion state.
+
+Local REA static result capture: `ev_ce5e295103b0e62fe181ba311add71f3b0140a59f365eb7da97c9acb0829218d`.
+Record: `/tmp/canvas-rea-video-results.json`. Both videos appear as poster
+frames with reduced motion; separate browser checks verify actual playback.

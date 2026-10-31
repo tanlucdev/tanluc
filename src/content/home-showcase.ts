@@ -7,20 +7,46 @@ export type HomeShowcaseProject = {
   summary: string;
   stats?: readonly string[];
   url?: string;
-  media: "artifacts" | "cafemaps" | "proactive" | "homepage";
+  media: "models" | "canvas" | "tools" | "execution" | "artifacts" | "cafemaps" | "proactive" | "homepage";
   referenceMedia?: boolean;
 };
 
 export const HOME_SHOWCASE: readonly HomeShowcaseProject[] = [
   {
     slug: "wala-ict",
-    company: "WALA ICT",
+    company: "WALA ICT / CJ ENM",
     title: "Dynamic Models",
     role: "Frontend Developer",
     period: "Oct 2025-Present",
-    summary: "For CJ CINEMA GEN, used by 20+ specialists, I built schema-driven Dynamic Models for 1,000+ AI models: input validation, execution payloads, and real-time WebSocket feedback. I worked in a six-person team with two frontend developers, delivered 10 canvas tools with AI coding agents, and reviewed and verified changes.",
-    media: "artifacts",
-    referenceMedia: true,
+    summary: "For CJ CINEMA GEN, used by 20+ specialists, I built schema-driven configuration for 1,000+ AI models. Model properties and required inputs become dynamic controls with matching validation, so the interface adapts as users switch models without a separate hardcoded form for each one.",
+    media: "models",
+  },
+  {
+    slug: "visual-workflow-editor",
+    company: "WALA ICT / CJ ENM",
+    title: "Visual Workflow Editor",
+    role: "Frontend Developer",
+    period: "Oct 2025-Present",
+    summary: "Within the same CJ CINEMA GEN workspace, I worked on the node-based workflow editor: canvas interactions, connecting nodes, and bringing model configuration into the creative flow. The walkthrough follows a scene direction through model setup to two video results, kept together on the canvas.",
+    media: "canvas",
+  },
+  {
+    slug: "creative-media-tools",
+    company: "WALA ICT / CJ ENM",
+    title: "Creative & Media Tools",
+    role: "Frontend Developer",
+    period: "Oct 2025-Present",
+    summary: "I built creative tools for CJ CINEMA GEN, including color correction, masks, compositing, and rotate and flip controls. This illustrative walkthrough uses one scene to show how individual adjustments change the image and how layers come together in a composition.",
+    media: "tools",
+  },
+  {
+    slug: "workflow-execution",
+    company: "WALA ICT / CJ ENM",
+    title: "Workflow Execution",
+    role: "Frontend Developer",
+    period: "Oct 2025-Present",
+    summary: "I connected workflow validation and execution payload construction with execution handling and real-time WebSocket updates. This illustrative run follows a missing input through correction, validation, queueing, execution, and output updates, making each stage visible to the user.",
+    media: "execution",
   },
   {
     slug: "cafemaps",

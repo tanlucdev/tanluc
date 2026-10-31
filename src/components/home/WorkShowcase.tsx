@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { HOME_SHOWCASE, type HomeShowcaseProject } from "@/content/home-showcase";
 import styles from "./WorkShowcase.module.css";
+import CinematicWorkflow from "@/components/work/CinematicWorkflow";
 
 const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/work`;
 const base = `${asset}/reference`;
@@ -150,8 +151,115 @@ function ArtifactMedia({ running }: { running: boolean }) {
   </div>;
 }
 
+// ponytail: Representative field sets; replace with approved production schemas when available.
+const modelExamples = [
+  { name: "Qwen Image 3.0", type: "Text to Image", fields: [["Aspect ratio", "16:9"], ["Output images", "1"]] },
+  { name: "FLUX Pro", type: "Image to Image", fields: [["Reference image", "Scene reference.jpg"], ["Strength", "0.65"]] },
+  { name: "Happyhorse 1.0", type: "Image to Video", fields: [["Reference image", "Scene reference.jpg"], ["Duration", "6 seconds"], ["Resolution", "1080p"]] },
+];
+
+function DynamicModelsMedia({ running }: { running: boolean }) {
+  const [ref, visible] = useVisibility<HTMLElement>(0.15);
+  const { reduced, hidden } = useMotionPreference();
+  const [step, setStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const active = running && visible && !reduced && !hidden && !paused;
+  const frame = reduced ? Math.floor(step / 3) * 3 + 2 : step;
+  const selected = Math.floor(frame / 3);
+  const phase = frame % 3;
+  const model = modelExamples[selected];
+  useEffect(() => {
+    if (!active) return;
+    const timer = window.setTimeout(() => setStep((value) => (value + 1) % 9), phase === 2 ? 3400 : 1900);
+    return () => window.clearTimeout(timer);
+  }, [active, phase, step]);
+  return <section ref={ref} className={styles.schemaDemo} aria-label="Schema-driven model configuration" data-model-stage={frame} data-running={active}>
+    <header className={styles.schemaHeader}><span><b>D·M</b> Model configuration</span><button type="button" aria-pressed={paused} disabled={reduced} onClick={() => setPaused((value) => !value)}>{reduced ? "Overview" : paused ? "Resume model demo" : "Pause model demo"}</button></header>
+    <div className={styles.schemaBody}>
+      <div className={styles.modelCatalogue}><span className={styles.schemaEyebrow}>MODEL LIBRARY</span><h4>1,000+ models.<br />One adaptive interface.</h4><p>Choose a model.<br />Its properties follow.</p><div className={styles.modelChoices}>{modelExamples.map((item, index) => <button key={item.name} type="button" aria-pressed={selected === index} onClick={() => { setStep(index * 3); setPaused(true); }}><span>{index === 2 ? "▷" : "▧"}</span><span>{item.name}<small>{item.type}</small></span><span>{selected === index ? "✓" : "+"}</span></button>)}</div><small className={styles.schemaExample}>Illustrative configuration</small></div>
+      <div className={styles.modelProperties}>
+        <div className={styles.schemaFormHeading}><span className={styles.schemaEyebrow}>PROPERTIES</span><span>{String(selected + 1).padStart(2, "0")} / 03</span></div>
+        <div key={model.name} className={styles.schemaFields}><h4>{model.name}<small>{model.type}</small></h4>
+          <dl><div className={styles.schemaField} data-invalid={phase === 1}><dt>Prompt <span>Required</span></dt><dd className={styles.schemaPrompt}>{phase === 2 ? "A quiet cafe after the rain, warm light, 35mm." : <span>Describe your scene…</span>}</dd>{phase === 1 && <p className={styles.schemaError}>Prompt is required.</p>}</div>
+          {model.fields.map(([label, value]) => <div key={label} className={styles.schemaField}><dt>{label}</dt><dd>{value}<span aria-hidden="true">{label === "Reference image" ? "▧" : "⌄"}</span></dd></div>)}</dl>
+          <div className={styles.schemaValidation} data-valid={phase === 2}>{phase === 2 ? "✓ Required inputs validated · Ready to run" : phase === 1 ? "Complete the required input to continue." : "Controls adapt to the selected model."}</div>
+        </div>
+      </div>
+    </div>
+    <footer className={styles.schemaFooter}><span>{phase === 0 ? "01 · Select a model — its fields appear automatically." : phase === 1 ? "02 · Validate — required inputs are checked." : "03 · Ready — the configuration is complete."}</span><span aria-hidden="true">{[0, 1, 2].map((index) => <i key={index} data-active={phase === index} />)}</span></footer>
+  </section>;
+}
+
+function useWalkthrough(running: boolean, lastFrame: number) {
+  const [ref, visible] = useVisibility<HTMLElement>(0.15);
+  const { reduced, hidden } = useMotionPreference();
+  const [step, setStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const active = running && visible && !reduced && !hidden && !paused;
+  const frame = reduced && !paused ? lastFrame : step;
+  useEffect(() => {
+    if (!active) return;
+    const timer = window.setTimeout(() => setStep((value) => (value + 1) % (lastFrame + 1)), frame === lastFrame ? 4800 : 2300);
+    return () => window.clearTimeout(timer);
+  }, [active, frame, lastFrame]);
+  const choose = (index: number) => { setStep(index); setPaused(true); };
+  return { ref, frame, paused, setPaused, reduced, active, choose };
+}
+
+// ponytail: Local visual demonstrations; replace examples with approved production captures when available.
+const creativeTools = [
+  { name: "Source", icon: "▧", caption: "Start with one scene. Each tool changes the same image.", fields: [["File", "Scene reference.jpg"], ["Size", "1280 × 720"]] },
+  { name: "Color", icon: "◐", caption: "Compare the original with a warmer color correction.", fields: [["Exposure", "+0.3"], ["Contrast", "+12"], ["Warmth", "+8"]] },
+  { name: "Mask", icon: "◌", caption: "Use a mask to limit the adjustment to one part of the scene.", fields: [["Shape", "Ellipse"], ["Scope", "Local adjustment"]] },
+  { name: "Transform", icon: "⤢", caption: "Rotate and flip the scene within the same frame.", fields: [["Rotation", "−6°"], ["Flip", "Horizontal"], ["Fit", "Fill"]] },
+  { name: "Composite", icon: "▤", caption: "Combine the corrected scene and a title as separate layers.", fields: [["Layer 01", "Corrected scene"], ["Layer 02", "Title overlay"], ["Blend", "Normal"]] },
+];
+
+function CreativeToolsMedia({ running }: { running: boolean }) {
+  const { ref, frame, paused, setPaused, reduced, active, choose } = useWalkthrough(running, creativeTools.length - 1);
+  const tool = creativeTools[frame];
+  const sceneImage = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/projects/cj/video-2.jpg`;
+  return <section ref={ref} className={styles.schemaDemo} aria-label="Creative media tools demonstration" data-tool-stage={frame} data-running={active}>
+    <header className={styles.schemaHeader}><span><b>D·M</b> Creative tools</span><button type="button" aria-pressed={paused} disabled={reduced} onClick={() => setPaused((value) => !value)}>{reduced ? "Overview" : paused ? "Resume tools demo" : "Pause tools demo"}</button></header>
+    <div className={styles.toolsBody}>
+      <div className={styles.editWorkspace}><div className={styles.toolChoices} aria-label="Creative tools">{creativeTools.map((item, index) => <button key={item.name} type="button" aria-pressed={frame === index} onClick={() => choose(index)}><span aria-hidden="true">{item.icon}</span>{item.name}</button>)}</div>
+        <div className={styles.editPreview} data-edit={frame}><img src={sceneImage} alt="A cafe scene used to demonstrate image adjustments" /><img className={styles.editedImage} src={sceneImage} alt="" aria-hidden="true" /><span className={styles.maskOutline} aria-hidden="true" /><div className={styles.compositeTitle} aria-hidden="true"><small>A SCENE STUDY</small>AFTER THE RAIN</div><span className={styles.editLabel}>{["Source image", "Original / Color corrected", "Local mask preview", "Rotated & flipped", "Scene + title layers"][frame]}</span></div>
+        <span className={styles.schemaExample}>Illustrative tool preview · supplied scene</span>
+      </div>
+      <div className={styles.toolProperties}><span className={styles.schemaEyebrow}>TOOL PROPERTIES</span><h4>{tool.name}</h4><dl>{tool.fields.map(([label, value]) => <div key={label} className={styles.schemaField}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><p>One scene.<br />Changes you can see.</p></div>
+    </div>
+    <footer className={styles.schemaFooter}><span>{tool.caption}</span><span aria-hidden="true">{creativeTools.map((item, index) => <i key={item.name} data-active={frame === index} />)}</span></footer>
+  </section>;
+}
+
+const executionStages = [
+  { title: "Validation blocked", detail: "Prompt is required. Execution has not started." },
+  { title: "Input corrected", detail: "The missing prompt is added to the model configuration." },
+  { title: "Workflow validated", detail: "Required inputs and node connections pass validation." },
+  { title: "Payload prepared", detail: "Node configuration and connections are included in the execution payload." },
+  { title: "Execution queued", detail: "The workflow is accepted and waiting to start." },
+  { title: "Model running", detail: "Real-time updates keep node status in sync with execution." },
+  { title: "Outputs ready", detail: "The completed output is attached to its node." },
+];
+
+function WorkflowExecutionMedia({ running }: { running: boolean }) {
+  const { ref, frame, paused, setPaused, reduced, active, choose } = useWalkthrough(running, executionStages.length - 1);
+  const stage = executionStages[frame];
+  const states = [frame === 0 ? "blocked" : "complete", frame === 6 ? "complete" : frame === 5 ? "running" : "pending", frame === 6 ? "complete" : "pending"];
+  return <section ref={ref} className={styles.schemaDemo} aria-label="Workflow execution demonstration" data-execution-stage={frame} data-running={active}>
+    <header className={styles.schemaHeader}><span><b>D·M</b> Workflow execution</span><button type="button" aria-pressed={paused} disabled={reduced} onClick={() => setPaused((value) => !value)}>{reduced ? "Overview" : paused ? "Resume execution demo" : "Pause execution demo"}</button></header>
+    <div className={styles.executionBody}>
+      <div className={styles.runOverview}><span className={styles.schemaEyebrow}>RUN OVERVIEW</span><h4>{stage.title}</h4><p className={styles.runDetail}>{stage.detail}</p><progress aria-label="Workflow execution progress" max={6} value={frame} />
+        <div className={styles.runNodes}>{["Scene input", "AI model", "Output"].map((name, index) => <div key={name} className={styles.runNode} data-state={states[index]}><span className={styles.runNodeIcon} aria-hidden="true">{states[index] === "complete" ? "✓" : states[index] === "blocked" ? "!" : states[index] === "running" ? "◌" : "·"}</span><span>{name}<small>{states[index]}</small></span><span>0{index + 1}</span></div>)}</div><small className={styles.schemaExample}>Illustrative run · no live execution</small>
+      </div>
+      <div className={styles.runFeed}><span className={styles.schemaEyebrow}>EXECUTION UPDATES</span><ol>{executionStages.map((item, index) => <li key={item.title} data-reached={frame >= index} data-current={frame === index}><button type="button" aria-pressed={frame === index} onClick={() => choose(index)}><span>{String(index + 1).padStart(2, "0")}</span><span>{item.title}<small>{index === frame ? item.detail : frame > index ? "Recorded" : "Pending"}</small></span></button></li>)}</ol></div>
+    </div>
+    <footer className={styles.schemaFooter}><span>{frame === 0 ? "Fix invalid inputs before starting a run." : frame < 4 ? "Validated configuration becomes an execution payload." : frame < 6 ? "Follow the run through real-time status updates." : "The run is complete. Results stay with the workflow."}</span><span aria-hidden="true">{[0, 1, 2, 3].map((index) => <i key={index} data-active={index === (frame < 2 ? 0 : frame < 4 ? 1 : frame < 6 ? 2 : 3)} />)}</span></footer>
+  </section>;
+}
+
 function ProjectMedia({ project, running }: { project: HomeShowcaseProject; running: boolean }) {
-  const media = project.media === "proactive" ? <ProactiveMedia running={running} /> : project.media === "homepage" ? <HomepageMedia running={running} /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} /> : <ArtifactMedia running={running} />;
+  const media = project.media === "models" ? <DynamicModelsMedia running={running} /> : project.media === "canvas" ? <CinematicWorkflow compact running={running} /> : project.media === "tools" ? <CreativeToolsMedia running={running} /> : project.media === "execution" ? <WorkflowExecutionMedia running={running} /> : project.media === "proactive" ? <ProactiveMedia running={running} /> : project.media === "homepage" ? <HomepageMedia running={running} /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} /> : <ArtifactMedia running={running} />;
   return <div className={styles.mediaFrame}>{media}{project.referenceMedia && <span className={styles.reference} data-work-reference>Temporary reference preview; not portfolio work</span>}</div>;
 }
 
@@ -199,7 +307,7 @@ export default function WorkShowcase() {
 
   useEffect(() => {
     const nav = navRef.current;
-    const media = document.querySelector(`.${styles.media}`);
+    const media = document.querySelector(`.${styles.mediaFrame}`);
     if (!nav || !media) return;
     nav.dataset.ready = "true";
     const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setNavRevealed(true); observer.disconnect(); } }, { rootMargin: "0px 0px -45% 0px", threshold: 0 });
