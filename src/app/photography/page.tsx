@@ -80,7 +80,7 @@ async function getPhotos(): Promise<Photo[]> {
       return {
         title,
         place: "Photography",
-        src: `${basePath}/images/photo/generated/full/${variantName(entry.name)}`,
+        src: `${basePath}/images/photo/${encodeURIComponent(entry.name)}`,
         thumbnail: `${basePath}/images/photo/generated/thumbnail/${variantName(entry.name)}`,
         tags: [style, entry.name, /sunset|setting sun|evening sky/i.test(title) ? "sunsets hoang hon" : "", /city|street|building/i.test(title) ? "city urban" : "", /cafe|matcha/i.test(title) ? "coffee cafe ca phe" : ""],
         width: metadata.width ?? 1,
