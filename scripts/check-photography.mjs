@@ -50,7 +50,9 @@ const base = process.env.BASE_URL || "http://localhost:3000";
     const title = await first.getAttribute("aria-label");
     await first.click();
     assert(await page.getByRole("dialog").evaluate((dialog) => dialog.matches(":modal")));
-    assert.match(await page.locator(".photo-lightbox__full").getAttribute("src"), /\/generated\/full\/[a-f0-9]{64}\.webp$/);
+    const originalSrc = await page.locator(".photo-lightbox__full").getAttribute("src");
+    assert.match(originalSrc, /\/images\/photo\/[^/]+\.(avif|gif|jpe?g|png|webp)$/i, "Lightbox loads an original file without resizing or recompression");
+    assert.equal(originalSrc, await first.getAttribute("data-photo-src"), "Original matches the selected photograph");
     assert(await page.locator(".photo-lightbox__media").evaluate((element) => {
       const style = getComputedStyle(element);
       return style.padding === "0px" && style.borderWidth === "0px" && style.backgroundColor === "rgba(0, 0, 0, 0)" && style.boxShadow === "none";
