@@ -8,6 +8,7 @@ export interface CaseStudy {
   url?: string;
   /* CSS gradient used as a placeholder cover until real imagery drops in */
   cover: string;
+  coverImage?: { src: string; alt: string; width: number; height: number };
   sections: { heading: string; body: string }[];
 }
 
@@ -46,6 +47,12 @@ export const WORK: CaseStudy[] = [
       "Making it easier to find a cafe that feels right for the day — whether it's for work, study, or simply slowing down.",
     url: "https://cafemaps.net",
     cover: "linear-gradient(135deg, #3568c4 0%, #1d3a6e 100%)",
+    coverImage: {
+      src: "/images/work/cafemaps/en-discovery.webp",
+      alt: "Cafe Maps discovery page with cafe filters and place cards",
+      width: 1800,
+      height: 1320,
+    },
     sections: [
       {
         heading: "The problem",
@@ -58,6 +65,35 @@ export const WORK: CaseStudy[] = [
       {
         heading: "The outcome",
         body: "What started as a personal project has grown to 10,000+ visitors, 30,000+ page views, and 200+ registered users, helping more people discover cafes across Ho Chi Minh City.",
+      },
+    ],
+  },
+  {
+    slug: "medichims",
+    title: "MedicHIMS",
+    client: "Onemedic",
+    year: "2025",
+    role: "Fullstack Developer",
+    summary: "Licensing, pricing and billing interfaces, with schema-driven forms for a healthcare information system.",
+    cover: "linear-gradient(135deg, #eeede9 0%, #e3e0da 100%)",
+    coverImage: {
+      src: "/images/work/medichims/services.webp",
+      alt: "MedicHIMS service purchases with usage, status, purchase date and expiry date",
+      width: 1800,
+      height: 987,
+    },
+    sections: [
+      {
+        heading: "Services & billing",
+        body: "At Onemedic, from March to August 2025, I delivered licensing, payment and pricing interfaces. Billing steps followed backend state transitions, keeping the interface aligned with the current subscription and service state.",
+      },
+      {
+        heading: "Document templates",
+        body: "I worked on schema-driven forms and internationalization. Document template configuration brings together field codes, data types and display rules for structured document subsections.",
+      },
+      {
+        heading: "Backend integration",
+        body: "Alongside the interface work, I added NestJS endpoints and connected backend workflows to the frontend.",
       },
     ],
   },
