@@ -14,7 +14,7 @@ try {
   const portrait = page.locator(".about-portrait-card");
   const portraitTransform = () => portrait.evaluate((element) => getComputedStyle(element).transform);
   await portrait.locator("img").evaluate((image) => image.decode());
-  assert((await portrait.locator("img").getAttribute("src")).endsWith("/images/about/recently/da-lat-solo-trip.jpg"));
+  assert((await portrait.locator("img").getAttribute("src")).endsWith("/images/about/recently/da-lat-solo-trip.webp"));
   const restingPortrait = await portraitTransform();
   assert.equal(await portrait.evaluate((element) => getComputedStyle(element).transitionDuration), "0.32s");
   await portrait.hover();
@@ -32,6 +32,7 @@ try {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.mouse.move(0, 0);
   await page.locator(".recent-print img").evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+  assert(await page.locator(".recent-print img").evaluateAll((images) => images.every((image) => image.currentSrc.includes("/images/about/recently/") && image.currentSrc.endsWith(".webp"))), "Recent gallery uses the new WebP images");
   await page.waitForFunction(() => [...document.querySelectorAll(".recent-print img")].every((image) => image.dataset.loaded === "true"));
   const entrance = await page.locator(".recent-print img").evaluateAll((images) => {
     images.forEach((image) => { image.style.animation = "none"; });
@@ -77,7 +78,7 @@ try {
     return style.backgroundColor === "rgb(255, 255, 255)" && parseFloat(style.paddingLeft) >= 10;
   }), "Opened photo has a white frame");
   await page.keyboard.press("ArrowRight");
-  await page.getByRole("dialog", { name: "Chasing the light", exact: true }).waitFor();
+  await page.getByRole("dialog", { name: "Trekking Dinh moutain", exact: true }).waitFor();
   await page.keyboard.press("Escape");
   await page.getByRole("dialog").waitFor({ state: "detached" });
   assert(await print.getByRole("button").evaluate((element) => element === document.activeElement));
