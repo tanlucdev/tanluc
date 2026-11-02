@@ -45,7 +45,7 @@ export default function About() {
 
         <div className="about-portrait-card order-1 mx-auto w-[200px] rounded-[2px] bg-white p-[10px] min-[701px]:order-2 min-[701px]:mx-0 min-[701px]:w-[248px]">
           <div className="relative aspect-[3/4] overflow-hidden rounded-[8px]">
-            <Image alt="Tan Luc by the lake on a solo trip to Da Lat" className="object-cover" fill loading="eager" sizes="(max-width: 700px) 180px, 228px" src={`${basePath}/images/about/recently/da-lat-solo-trip.jpg`} />
+            <Image alt="Tan Luc by the lake on a solo trip to Da Lat" className="object-cover" fill loading="eager" sizes="(max-width: 700px) 180px, 228px" src={`${basePath}/images/about/recently/da-lat-solo-trip.webp`} />
           </div>
         </div>
       </section>
