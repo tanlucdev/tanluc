@@ -15,6 +15,8 @@ export default function WorkIndex() {
       <div className={styles.projects}>
         {WORK.map((w) => (
           <article key={w.slug} className={styles.project}>
+            <h2 className={styles.title}><Link href={`/work/${w.slug}`}>{w.title}<span aria-hidden="true">↗</span></Link></h2>
+            <span className={styles.meta}>{w.role} · {w.year}</span>
             <Link href={`/work/${w.slug}`} className={styles.cover} data-project={w.slug} aria-label={`Read ${w.title} case study`}>
               {w.slug === "dynamic-model" ? (
                 <div className={styles.modelCover} aria-hidden="true">
@@ -37,16 +39,12 @@ export default function WorkIndex() {
                 </div>
               ) : w.coverImage ? (
                 <div className={styles.cafeCover}>
-                  <Image {...w.coverImage} src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${w.coverImage.src}`} sizes="(max-width: 760px) 90vw, 660px" />
+                  <Image {...w.coverImage} src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${w.coverImage.src}`} alt={w.coverImage.alt} sizes="(max-width: 760px) 90vw, 660px" />
                 </div>
               ) : <div className={styles.placeholder} style={{ backgroundImage: w.cover }} />}
             </Link>
-            <div className={styles.copy}>
-              <span className={styles.meta}>{w.role} · {w.year}</span>
-              <h2><Link href={`/work/${w.slug}`}>{w.title}<span aria-hidden="true">↗</span></Link></h2>
-              <p>{w.summary}</p>
-              <Link href={`/work/${w.slug}`} className={styles.read}>View case study <span aria-hidden="true">↗</span></Link>
-            </div>
+            <p className={styles.summary}>{w.summary}</p>
+            <Link href={`/work/${w.slug}`} className={styles.read}>View case study <span aria-hidden="true">↗</span></Link>
           </article>
         ))}
       </div>
