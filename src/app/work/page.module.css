@@ -1,0 +1,55 @@
+.work { width: min(100% - 64px, 1145px); margin: 0 auto; padding: clamp(64px, 9vw, 128px) 0 140px; color: #7d7a73; }
+.intro { margin-bottom: clamp(48px, 7vw, 88px); }
+.intro h1 { margin: 0; font: italic clamp(40px, 5vw, 64px)/1.1 var(--font-newsreader), Georgia, serif; font-weight: 400; }
+.intro p { margin: 18px 0 0; font-size: 15px; line-height: 1.6; }
+.projects { display: grid; gap: clamp(64px, 8vw, 104px); }
+.project { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 5vw, 64px); }
+.cover { display: block; position: relative; min-width: 0; aspect-ratio: 1.6; overflow: hidden; border-radius: 12px; background: #eeede9; text-decoration: none; }
+.cover:focus-visible, .copy a:focus-visible { outline: 2px solid #8b654d; outline-offset: 6px; }
+.copy { min-width: 0; }
+.meta { font-size: 11px; line-height: 1.5; }
+.copy h2 { margin: 14px 0 16px; font: italic clamp(28px, 3vw, 36px)/1.15 var(--font-newsreader), Georgia, serif; font-weight: 400; }
+.copy h2 a { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; color: inherit; text-decoration: none; }
+.copy h2 span { font: 18px var(--font-geist-sans), sans-serif; }
+.copy p { margin: 0; font-size: 14px; line-height: 1.8; text-wrap: pretty; }
+.read { display: inline-block; margin-top: 24px; color: #5e5a54; font-size: 12px; text-decoration: underline; text-underline-offset: 5px; }
+.read span { margin-left: 6px; }
+.modelCover { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 5% 9% 16%; container-type: inline-size; }
+.modelCard, .properties { position: relative; width: 46%; border: 1px solid #dedbd6; border-radius: 9px; background: #faf9f7; box-shadow: 0 12px 28px #40352a06; color: #72685b; font-size: clamp(8px, 2.3cqw, 13px); }
+.modelCard { display: flex; flex-direction: column; padding: 6%; }
+.eyebrow { color: #8c8276; font-size: .8em; }
+.modelSymbol { margin: 15% 0 10%; color: #a28265; font-size: 3em; line-height: 1; }
+.modelCard strong { margin-bottom: 7px; font-size: 1.15em; font-weight: 500; }
+.modelCard > span:last-child { font-size: .8em; }
+.connector { width: 8%; height: 1px; background: #bba78e; }
+.properties { display: grid; gap: clamp(4px, 1.6cqw, 9px); padding: 4%; }
+.properties > span:not(:first-child) { font-size: .85em; }
+.properties > div { display: flex; justify-content: space-between; gap: 6px; padding: clamp(4px, 1.6cqw, 9px); border: 1px solid #e3ded6; border-radius: 5px; background: #fffefd; font-size: .85em; }
+.properties .ready { margin-top: 4px; color: #69795d; }
+.coverNote { position: absolute; bottom: 6%; left: 0; right: 0; text-align: center; font-size: 9px; color: #8c8276; }
+.cafeCover { position: absolute; inset: 9% 13% auto; }
+.cover[data-project="medichims"] .cafeCover { top: 17.5%; }
+.cafeCover img { display: block; width: 100%; height: auto; border: 1px solid #e3ded6; border-radius: 8px; box-shadow: 0 12px 28px #40352a0a; }
+.placeholder { position: absolute; inset: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .project { animation: arrive .6s ease-out both; }
+  .project:nth-child(2) { animation-delay: .08s; }
+  .project:nth-child(3) { animation-delay: .16s; }
+  .modelCard, .properties, .cafeCover { transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+  .cover:focus-visible .modelCard { transform: translateY(-5px); }
+  .cover:focus-visible .properties { transform: translateY(-5px); }
+  .cover:focus-visible .cafeCover { transform: translateY(-6px); }
+  @media (hover: hover) {
+    .cover:hover .modelCard { transform: translateY(-5px); }
+    .cover:hover .properties { transform: translateY(-5px); }
+    .cover:hover .cafeCover { transform: translateY(-6px); }
+  }
+}
+@keyframes arrive { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px) {
+  .work { width: calc(100% - 40px); padding-top: 64px; padding-bottom: 88px; }
+  .project { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .copy h2 { margin-top: 10px; }
+  .copy p { max-width: 50ch; }
+  .read { margin-top: 18px; }
+}

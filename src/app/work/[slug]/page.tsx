@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import CinematicWorkflow from "@/components/work/CinematicWorkflow";
 import { WORK } from "@/content/work";
@@ -28,7 +29,7 @@ export default async function CaseStudy({
       <p className="mt-3 font-mono text-[11px] uppercase tracking-widest text-ink-soft">
         {study.client} · {study.year} · {study.role}
       </p>
-      {study.slug === "dynamic-model" ? <CinematicWorkflow /> : <div className="mt-8 h-80 w-full rounded-xl border border-ink/10" style={{ backgroundImage: study.cover }} />}
+      {study.slug === "dynamic-model" ? <CinematicWorkflow /> : study.coverImage ? <div className="mt-8 rounded-xl bg-[#eeede9] p-6 sm:p-10"><Image {...study.coverImage} src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${study.coverImage.src}`} className="h-auto w-full rounded-lg" sizes="(max-width: 768px) 90vw, 680px" /></div> : <div className="mt-8 h-80 w-full rounded-xl border border-ink/10" style={{ backgroundImage: study.cover }} />}
       {study.url && (
         <a
           className="mt-5 inline-flex border-b border-ink/30 pb-1 font-mono text-[11px] uppercase tracking-widest text-ink-soft transition-colors hover:border-ink hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"

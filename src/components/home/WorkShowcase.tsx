@@ -7,8 +7,6 @@ import CinematicWorkflow from "@/components/work/CinematicWorkflow";
 
 const asset = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/work`;
 const base = `${asset}/reference`;
-const psychicCards = Array.from({ length: 18 }, (_, index) => `${base}/psychic-cards/card-${(index * 7) % 18}.png`);
-const homepageCards = [8, 5, 2, 6, 1, 3, 7, 0, 4, 9].map((index) => `${base}/homepage-cards/homepage_cards${index ? `-${index}` : ""}.png`);
 const skinFiles = ["gmail-skin.png", "slack-skin.png", "outlook-skin.png"];
 
 function useVisibility<T extends Element>(threshold: number) {
@@ -38,57 +36,6 @@ function useMotionPreference() {
     return () => { media.removeEventListener("change", update); document.removeEventListener("visibilitychange", visibility); };
   }, []);
   return { reduced, hidden };
-}
-
-function MediaVideo({ src, poster, label, playing }: { src: string; poster: string; label: string; playing: boolean }) {
-  const [ref, visible] = useVisibility<HTMLVideoElement>(0.2);
-  const { reduced, hidden } = useMotionPreference();
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) return;
-    if (playing && visible && !reduced && !hidden) video.play().catch(() => undefined);
-    else video.pause();
-    return () => video.pause();
-  }, [playing, visible, reduced, hidden, ref]);
-  return <video ref={ref} className={styles.video} aria-label={label} loop muted playsInline preload="metadata" poster={poster}><source src={src} type="video/mp4" /></video>;
-}
-
-function ProactiveMedia({ running }: { running: boolean }) {
-  const [ref, visible] = useVisibility<HTMLDivElement>(0.1);
-  const [step, setStep] = useState(0);
-  const { reduced, hidden } = useMotionPreference();
-  const active = running && visible && !reduced && !hidden;
-  useEffect(() => {
-    if (!active) return;
-    const timer = window.setInterval(() => setStep((value) => value + 1), 3400);
-    return () => window.clearInterval(timer);
-  }, [active]);
-  return <div className={styles.media} role="group" aria-label="Product experience media">
-    <MediaVideo src={`${base}/psychic-updated.mp4`} poster={`${base}/psychic-updated-poster.jpg`} label="Product walkthrough" playing={running} />
-    <div className={`${styles.panel} ${styles.popups}`}><img src={`${base}/psychic-popups-shadow.png`} alt="" /></div>
-    <div ref={ref} className={styles.cards} data-running={active} role="img" aria-label="A rotating collection of product cards"><div className={styles.cardCanvas}>{psychicCards.map((src, index) => {
-      const offset = (index - (step % 18) + 27) % 18 - 9;
-      return <img key={src} className={styles.card} src={src} alt="" aria-hidden="true" style={{ opacity: Math.abs(offset) > 4 ? 0 : 1, transform: `translate(-50%, -50%) translateY(${offset * 16.35}cqw) perspective(600px) rotateX(${-offset * 12}deg) scale(${Math.max(.8, 1 - Math.abs(offset) * .035)})`, transition: Math.abs(offset) > 4 ? "none" : undefined }} />;
-    })}</div></div>
-  </div>;
-}
-
-function HomepageMedia({ running }: { running: boolean }) {
-  const [ref, visible] = useVisibility<HTMLDivElement>(0.1);
-  const [before, setBefore] = useState(false);
-  const { reduced, hidden } = useMotionPreference();
-  const active = running && visible && !reduced && !hidden;
-  return <div className={styles.media} role="group" aria-label="Product experience media">
-    <div className={styles.comparison} data-before={before}>
-      <div className={styles.comparisonTrack}>
-        <button className={styles.screen} type="button" aria-label="Show earlier product screen" aria-pressed={before} onClick={() => setBefore(true)}><img src={`${base}/homepage-before.png`} alt="Earlier product screen" /></button>
-        <button className={styles.screen} type="button" aria-label="Show current product screen" aria-pressed={!before} onClick={() => setBefore(false)}><MediaVideo src={`${base}/homepage-final.mp4`} poster={`${base}/homepage-final-poster.jpg`} label="Current product screen" playing={running && !before} /></button>
-      </div>
-      <button className={styles.comparisonLabel} type="button" onClick={() => setBefore((value) => !value)}>{before ? "After →" : "← Before"}</button>
-    </div>
-    <div className={`${styles.panel} ${styles.corner}`}><img src={`${base}/homepage-company-corner.png`} alt="" /></div>
-    <div ref={ref} className={styles.cards} data-running={active} tabIndex={0} role="region" aria-label="Product cards. Focus or hover pauses movement."><div className={styles.cardStream}>{[0, 1].map((group) => <div key={group} className={styles.cardGroup} aria-hidden={group === 1}>{homepageCards.map((src, index) => <img key={src} src={src} alt={group === 0 ? `Product update ${index + 1}` : ""} />)}</div>)}</div></div>
-  </div>;
 }
 
 function artifactKeyframes(index: number) {
@@ -259,15 +206,107 @@ function WorkflowExecutionMedia({ running }: { running: boolean }) {
 }
 
 function ProjectMedia({ project, running }: { project: HomeShowcaseProject; running: boolean }) {
-  const media = project.media === "models" ? <DynamicModelsMedia running={running} /> : project.media === "canvas" ? <CinematicWorkflow compact running={running} /> : project.media === "tools" ? <CreativeToolsMedia running={running} /> : project.media === "execution" ? <WorkflowExecutionMedia running={running} /> : project.media === "proactive" ? <ProactiveMedia running={running} /> : project.media === "homepage" ? <HomepageMedia running={running} /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} /> : <ArtifactMedia running={running} />;
+  const media = project.media === "models" ? <DynamicModelsMedia running={running} /> : project.media === "canvas" ? <CinematicWorkflow compact running={running} /> : project.media === "tools" ? <CreativeToolsMedia running={running} /> : project.media === "execution" ? <WorkflowExecutionMedia running={running} /> : project.media === "medichims" ? <MedicHimsMedia /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} running={running} /> : project.media === "grateful" ? <GratefulMedia running={running} /> : <ArtifactMedia running={running} />;
   return <div className={styles.mediaFrame}>{media}{project.referenceMedia && <span className={styles.reference} data-work-reference>Temporary reference preview; not portfolio work</span>}</div>;
 }
 
-function CafeMapsMedia({ project }: { project: HomeShowcaseProject }) {
-  return <a className={`${styles.media} ${styles.cafemapsMedia}`} href={project.url!} target="_blank" rel="noreferrer" aria-label="Visit Cafemaps">
-    <img src={`${asset}/cafemaps/website.jpg`} alt="Cafemaps cafe discovery website" />
-    <span className={styles.cafemapsStats} data-cafemaps-stats>{project.stats?.map((stat) => <span key={stat}>{stat}</span>)}</span>
-  </a>;
+const medicServiceScreens = [
+  { file: "services", height: 987, label: "Purchases", alt: "MedicHIMS service purchases with usage, status, purchase date and expiry date", caption: "Usage, purchase history and service status in one view." },
+  { file: "add-service", height: 422, label: "Select a package", alt: "MedicHIMS add service form with service, package and pricing fields", caption: "Service and package selection, with pricing kept together." },
+  { file: "service-details", height: 422, label: "Price breakdown", alt: "MedicHIMS service details with package, unit price, discount, VAT and total", caption: "A detailed view of the selected package and its price breakdown." },
+];
+const medicTemplateScreens = [
+  { file: "template-fields", height: 2874, label: "Field configuration", alt: "MedicHIMS document subsection configuration with field codes, data types and display controls", caption: "Field codes, data types and display rules define a document subsection." },
+  { file: "template-settings", height: 985, label: "Template settings", alt: "MedicHIMS document template settings including document type, category and paper size", caption: "Document type, category, visibility and paper size, kept in one place." },
+  { file: "add-template", height: 986, label: "New template", alt: "MedicHIMS add document template dialog", caption: "A focused form for defining a new document template." },
+  { file: "add-subsection", height: 986, label: "New subsection", alt: "MedicHIMS empty subsection editor with configuration controls", caption: "Subsections bring individual fields into a structured document." },
+];
+
+function MedicHimsGallery({ title, description, screens, selected }: { title: string; description: string; screens: typeof medicServiceScreens; selected: boolean }) {
+  const [index, setIndex] = useState(0);
+  const screen = screens[index];
+  return <section className={styles.medicGallery} aria-label={title} data-selected={selected}>
+    <header className={styles.medicHeading}><h4>{title}</h4><p>{description}</p></header>
+    <div className={styles.medicScreens} role="group" aria-label={`${title} screens`}>{screens.map((item, position) => <button key={item.file} type="button" aria-pressed={position === index} onClick={() => setIndex(position)}>{item.label}</button>)}</div>
+    <figure className={styles.medicFigure}>
+      <div key={screen.file} className={styles.medicViewport} data-compact={screen.height < 600} tabIndex={0} role="region" aria-label={`${screen.label} screenshot. Scroll to explore.`}><img src={`${asset}/medichims/${screen.file}.webp`} alt={screen.alt} width={1800} height={screen.height} loading="lazy" /></div>
+      <figcaption><span>{screen.caption}</span><a href={`${asset}/medichims/${screen.file}.webp`} target="_blank" rel="noreferrer" aria-label={`Open ${screen.label} full size (opens in a new tab)`}>View full size ↗</a></figcaption>
+    </figure>
+  </section>;
+}
+
+function MedicHimsMedia() {
+  const [topic, setTopic] = useState(0);
+  return <div className={styles.medicShowcase} role="group" aria-label="MedicHIMS product showcase">
+    <div className={styles.medicTopics} role="group" aria-label="MedicHIMS topics">{["Services & billing", "Document templates"].map((label, index) => <button key={label} type="button" aria-pressed={topic === index} onClick={() => setTopic(index)}>{label}</button>)}</div>
+    <MedicHimsGallery title="Services & billing" description="From choosing a package to keeping track of its use." screens={medicServiceScreens} selected={topic === 0} />
+    <MedicHimsGallery title="A structure for every form." description="Configurable templates, down to the individual field." screens={medicTemplateScreens} selected={topic === 1} />
+    <p className={styles.medicSource}>Actual product screens · Scroll within each screen to explore.</p>
+  </div>;
+}
+
+function CafeScreenTour({ label, screens, running, directory = "cafemaps" }: { label: string; screens: { file: string; title: string; alt: string }[]; running: boolean; directory?: string }) {
+  const [ref, visible] = useVisibility<HTMLDivElement>(0.15);
+  const { reduced, hidden } = useMotionPreference();
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [interacting, setInteracting] = useState(false);
+  const active = running && visible && !reduced && !hidden && !paused && !interacting;
+  useEffect(() => {
+    if (!active) return;
+    const timer = window.setTimeout(() => setIndex((value) => (value + 1) % screens.length), 3500);
+    return () => window.clearTimeout(timer);
+  }, [active, index, screens.length]);
+  return <div ref={ref} className={styles.cafeTour} role="region" aria-label={label} data-running={active} data-screen={index}>
+    <div className={styles.cafeTourWindow} onMouseEnter={() => setInteracting(true)} onMouseLeave={() => setInteracting(false)} onFocusCapture={() => setInteracting(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setInteracting(false); }}><div className={styles.cafeTourTrack} style={{ transform: `translateY(-${index * 100}%)` }}>{screens.map((screen, position) => <a key={screen.file} className={styles.cafeTourSlide} href={`${asset}/${directory}/${screen.file}.webp`} target="_blank" rel="noreferrer" aria-label={`${screen.alt} (opens in a new tab)`} aria-hidden={position !== index} inert={position !== index}><img src={`${asset}/${directory}/${screen.file}.webp`} alt={screen.alt} width={1440} height={1000} loading={visible ? "eager" : "lazy"} /></a>)}</div></div>
+    <div className={styles.cafeTourControls}><div role="group" aria-label={`${label} screens`}>{screens.map((screen, position) => <button key={screen.file} type="button" aria-pressed={position === index} onClick={() => { setIndex(position); setPaused(true); }}>{screen.title}</button>)}</div><button type="button" aria-label={`${paused ? "Resume" : "Pause"} ${label}`} aria-pressed={paused} onClick={() => setPaused((value) => !value)}>{paused ? "Play" : "Pause"}</button></div>
+  </div>;
+}
+
+function GratefulMedia({ running }: { running: boolean }) {
+  return <div className={styles.gratefulShowcase}>
+    <CafeScreenTour label="Grateful Forum preview" directory="grateful-forum" running={running} screens={[
+      { file: "community", title: "Community", alt: "Grateful Forum public feed preview with shared gratitude notes and weekly writing rhythm" },
+      { file: "practice", title: "Practice", alt: "Grateful Forum landing page demo of the practice calendar and daily gratitude notes" },
+      { file: "reflect", title: "Reflect", alt: "Grateful Forum landing page demo of the personal journal and reflection prompts" },
+    ]} />
+    <p className={styles.gratefulSource}>Public feed preview & landing page demos · Actual website captures</p>
+  </div>;
+}
+
+function CafeMapsMedia({ project, running }: { project: HomeShowcaseProject; running: boolean }) {
+  const [managementOpen, setManagementOpen] = useState(false);
+  return <div className={styles.cafeEditorial} role="group" aria-label="Cafe Maps product showcase">
+    <div className={styles.cafePublic}>
+      <div className={styles.cafeDiscover}>
+        <CafeScreenTour label="Cafe Maps discovery" running={running} screens={[
+          { file: "en-discovery", title: "Explore", alt: "Cafe Maps English discovery: search, filters and cafe cards" },
+          { file: "en-detail", title: "Cafe details", alt: "Cafe Maps English cafe details: photo gallery, opening hours and atmosphere" },
+          { file: "en-saved", title: "Saved", alt: "Cafe Maps English saved collection with folders, filters and saved cafe cards" },
+          { file: "en-quiz", title: "Quiz", alt: "Cafe Maps English personality quiz: questions and coffee mood choices" },
+          { file: "en-contribute", title: "Contribute", alt: "Cafe Maps English contribution choices for visitors and cafe owners" },
+        ]} />
+        <div className={styles.cafeEditorialFoot}><span data-cafemaps-stats>{project.stats?.join(" · ")}</span></div>
+      </div>
+      <a className={styles.cafeDetail} href={`${asset}/cafemaps/editorial-gallery.webp`} target="_blank" rel="noreferrer" aria-label="View Cafe Maps cafe gallery (opens in a new tab)"><img src={`${asset}/cafemaps/editorial-gallery.webp`} alt="The photo gallery of Em có café — Nguyễn Trãi" width={1000} height={598} loading="lazy" /><span>Get a feel for the place.</span></a>
+      <a className={styles.cafePersonality} href={`${asset}/cafemaps/en-quiz-result.webp`} target="_blank" rel="noreferrer" aria-label="View Cafe Maps English quiz result (opens in a new tab)"><img src={`${asset}/cafemaps/en-quiz-result.webp`} alt="Cafe Maps quiz result: Cozy Plant Corner persona, cafe traits and matching preferences" width={1570} height={920} loading="lazy" /></a>
+    </div>
+    <div className={styles.cafeManagement}>
+      <button className={styles.cafeManagementToggle} type="button" aria-expanded={managementOpen} aria-controls="cafe-management-content" onClick={() => setManagementOpen((value) => !value)}>Behind the scenes<span aria-hidden="true">{managementOpen ? "−" : "+"}</span></button>
+      <div id="cafe-management-content" className={styles.cafeManagementBody} data-expanded={managementOpen}>
+      <header className={styles.cafeManagementCopy}><div><span>BEHIND THE PLACES</span><h4>From submission to discovery.</h4></div><p>Review contributions, curate the catalogue,<br />and look after every detail.</p></header>
+      <div className={styles.cafeAdminScreens}>
+        <CafeScreenTour label="Cafe Maps CMS" running={running} screens={[
+          { file: "en-cms-cafes", title: "Catalogue", alt: "Cafe Maps English CMS cafe catalogue with filters and publication statuses" },
+          { file: "en-cms-editing", title: "Editing", alt: "Cafe Maps English media editor with cover image and thumbnail positioning controls" },
+          { file: "en-cms-submissions", title: "Submissions", alt: "Cafe Maps English CMS community submissions queue; contributor details redacted" },
+          { file: "en-cms-review", title: "Moderation", alt: "Cafe Maps English CMS contribution review and response panel; contributor details redacted" },
+        ]} />
+        <a className={styles.cafeAdminMedia} href={`${asset}/cafemaps/en-cms-media.webp`} target="_blank" rel="noreferrer" aria-label="View Cafe Maps English media editor (opens in a new tab)"><img src={`${asset}/cafemaps/en-cms-media.webp`} alt="Cafe Maps English media editor: cover image, thumbnail positioning, menu and gallery" width={540} height={1000} loading="lazy" /><span>Images, menus & the finishing touches.</span></a>
+      </div>
+      </div>
+    </div>
+  </div>;
 }
 
 function ease(progress: number) {
@@ -400,7 +439,7 @@ export default function WorkShowcase() {
   return <section id="work" className={`portfolio-home-work ${styles.showcase}`} aria-labelledby="work-title">
     <div className={styles.editorial}>
       <aside className={styles.rail}><nav ref={navRef} className={styles.nav} data-revealed={navRevealed} aria-label="Selected work">{HOME_SHOWCASE.map((project) => <a key={project.slug} href={`#work-${project.slug}`} aria-current={active === project.slug ? "location" : undefined} onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, "", `#work-${project.slug}`); const target = document.getElementById(`work-${project.slug}`); if (target) { moveTo(target, true); target.focus({ preventScroll: true }); } }}>{project.title}</a>)}<span className={styles.dot} data-work-dot aria-hidden="true" /></nav></aside>
-      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span>{project.role && <span>{project.role}</span>}{project.period && <span>{project.period}</span>}</div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p>{project.url && <a className={styles.projectLink} href={project.url} target="_blank" rel="noreferrer">Visit cafemaps.net</a>}</Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
+      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span>{project.role && <span>{project.role}</span>}{project.period && <span>{project.period}</span>}</div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p>{project.url && <a className={styles.projectLink} href={project.url} target="_blank" rel="noreferrer">Visit {new URL(project.url).hostname}</a>}</Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
     </div>
   </section>;
 }

@@ -7,7 +7,7 @@ export type HomeShowcaseProject = {
   summary: string;
   stats?: readonly string[];
   url?: string;
-  media: "models" | "canvas" | "tools" | "execution" | "artifacts" | "cafemaps" | "proactive" | "homepage";
+  media: "models" | "canvas" | "tools" | "execution" | "artifacts" | "cafemaps" | "medichims" | "grateful";
   referenceMedia?: boolean;
 };
 
@@ -51,10 +51,10 @@ export const HOME_SHOWCASE: readonly HomeShowcaseProject[] = [
   {
     slug: "cafemaps",
     company: "Independent product",
-    title: "Cafemaps",
+    title: "Cafe Maps",
     role: "Independent Full-stack Developer",
-    summary: "I independently build and run Cafemaps across Next.js, NestJS, PostGIS, admin tools, and deployment. The Ho Chi Minh City product helps people discover community cafes by location, while reliable fallbacks and an image-storage migration keep the experience dependable.",
-    stats: ["500 registered users", "15,000 visits", "50 community-contributed cafes"],
+    summary: "From finding the right atmosphere to keeping a personal collection, I independently design, build, and run Cafe Maps, a cafe discovery product for Ho Chi Minh City. My work spans Next.js, NestJS, PostGIS, admin tools, and deployment.",
+    stats: ["15,000+ visitors", "40,000+ page views"],
     url: "https://cafemaps.net",
     media: "cafemaps",
   },
@@ -65,15 +65,16 @@ export const HOME_SHOWCASE: readonly HomeShowcaseProject[] = [
     role: "Fullstack Developer",
     period: "Mar-Aug 2025",
     summary: "I delivered licensing, payment, and pricing UI and added NestJS endpoints; billing steps followed backend state transitions. Schema-driven forms and i18n kept the healthcare information system consistent across its workflows.",
-    media: "proactive",
-    referenceMedia: true,
+    media: "medichims",
   },
+
   {
-    slug: "isb-corp",
-    company: "ISB Corp",
-    title: "ISB project",
-    summary: "Project details are pending verification. This story will be expanded with an accurate scope and contributions once they are available.",
-    media: "homepage",
-    referenceMedia: true,
+    slug: "grateful-forum",
+    company: "Independent product",
+    title: "Grateful Forum",
+    role: "Full-stack Engineer",
+    summary: "I built Grateful Forum with React, Next.js and TypeScript, bringing guided writing, personal journaling, habit tracking and community sharing into a bilingual experience. Private reflection and shared gratitude come together through a daily writing practice.",
+    url: "https://grateful.forum/",
+    media: "grateful",
   },
 ];
