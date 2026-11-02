@@ -8,6 +8,7 @@ export interface CaseStudy {
   url?: string;
   /* CSS gradient used as a placeholder cover until real imagery drops in */
   cover: string;
+  coverImage?: { src: string; alt: string; width: number; height: number };
   sections: { heading: string; body: string }[];
 }
 
@@ -46,6 +47,12 @@ export const WORK: CaseStudy[] = [
       "Making it easier to find a cafe that feels right for the day — whether it's for work, study, or simply slowing down.",
     url: "https://cafemaps.net",
     cover: "linear-gradient(135deg, #3568c4 0%, #1d3a6e 100%)",
+    coverImage: {
+      src: "/images/work/cafemaps/en-discovery.webp",
+      alt: "Cafe Maps discovery page with cafe filters and place cards",
+      width: 1800,
+      height: 1320,
+    },
     sections: [
       {
         heading: "The problem",
@@ -62,6 +69,35 @@ export const WORK: CaseStudy[] = [
     ],
   },
   {
+    slug: "medichims",
+    title: "MedicHIMS",
+    client: "Onemedic",
+    year: "2025",
+    role: "Fullstack Developer",
+    summary: "Licensing, pricing and billing interfaces, with schema-driven forms for a healthcare information system.",
+    cover: "linear-gradient(135deg, #eeede9 0%, #e3e0da 100%)",
+    coverImage: {
+      src: "/images/work/medichims/services.webp",
+      alt: "MedicHIMS service purchases with usage, status, purchase date and expiry date",
+      width: 1800,
+      height: 987,
+    },
+    sections: [
+      {
+        heading: "Services & billing",
+        body: "At Onemedic, from March to August 2025, I delivered licensing, payment and pricing interfaces. Billing steps followed backend state transitions, keeping the interface aligned with the current subscription and service state.",
+      },
+      {
+        heading: "Document templates",
+        body: "I worked on schema-driven forms and internationalization. Document template configuration brings together field codes, data types and display rules for structured document subsections.",
+      },
+      {
+        heading: "Backend integration",
+        body: "Alongside the interface work, I added NestJS endpoints and connected backend workflows to the frontend.",
+      },
+    ],
+  },
+  {
     slug: "grateful-forum",
     title: "Grateful Forum",
     client: "Grateful Forum",
@@ -70,6 +106,12 @@ export const WORK: CaseStudy[] = [
     summary:
       "Turning everyday gratitude into a habit through a personal journal and a shared community.",
     cover: "linear-gradient(135deg, #e8b93c 0%, #a67c14 100%)",
+    coverImage: {
+      src: "/images/work/grateful-forum/discover.webp",
+      alt: "Grateful Forum homepage introducing private journaling and shared gratitude",
+      width: 1440,
+      height: 1000,
+    },
     url: "https://grateful.forum",
     sections: [
       {
@@ -82,7 +124,7 @@ export const WORK: CaseStudy[] = [
       },
       {
         heading: "The outcome",
-        body: "Delivered a complete application that brings personal journaling, habit tracking, and community interaction together in one experience. The project demonstrates end-to-end frontend development across a multi-feature application, from responsive UI and authentication flows to structured user interactions. While Grateful has not launched publicly, the completed product establishes a foundation for future user testing and validation.",
+        body: "Delivered an application that brings personal journaling, habit tracking, and community interaction together in one experience. The project demonstrates end-to-end frontend development across responsive UI, authentication flows and structured user interactions. A public feed preview is available at grateful.forum.",
       },
     ],
   },

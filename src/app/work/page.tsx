@@ -1,33 +1,53 @@
 import Link from "next/link";
-import CinematicWorkflow from "@/components/work/CinematicWorkflow";
+import Image from "next/image";
 import { WORK } from "@/content/work";
+import styles from "./page.module.css";
 
 export const metadata = { title: "Work — Tan Luc" };
 
 export default function WorkIndex() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
-      <h1 className="font-serif text-5xl italic">Work</h1>
-      <p className="mt-3 max-w-xl text-ink-soft">
-        Case studies from the last few years. Placeholder content for now — real
-        stories drop in via <code className="font-mono text-sm">src/content/work.ts</code>.
-      </p>
-      <div className="mt-12 flex flex-col gap-10">
-        {WORK.map((w, i) => (
-          <Link
-            key={w.slug}
-            href={`/work/${w.slug}`}
-            className={`group grid grid-cols-1 gap-6 md:grid-cols-2 ${i % 2 ? "md:[&>*:first-child]:order-2" : ""}`}
-          >
-            {w.slug === "dynamic-model" ? <div className="h-64 overflow-hidden rounded-xl border border-ink/10 transition-transform duration-500 group-hover:scale-[1.01]"><CinematicWorkflow compact /></div> : <div className="h-64 rounded-xl border border-ink/10 transition-transform duration-500 group-hover:scale-[1.01]" style={{ backgroundImage: w.cover }} />}
-            <div className="flex flex-col justify-center">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-ink-soft">
-                {w.client} · {w.year} · {w.role}
-              </span>
-              <h2 className="mt-2 font-serif text-3xl italic group-hover:underline">{w.title}</h2>
-              <p className="mt-3 text-ink-soft">{w.summary}</p>
+    <div className={styles.work}>
+      <header className={styles.intro}>
+        <h1>Work</h1>
+        <p>A selection of products and the thinking behind them.</p>
+      </header>
+      <div className={styles.projects}>
+        {WORK.map((w) => (
+          <article key={w.slug} className={styles.project}>
+            <Link href={`/work/${w.slug}`} className={styles.cover} data-project={w.slug} aria-label={`Read ${w.title} case study`}>
+              {w.slug === "dynamic-model" ? (
+                <div className={styles.modelCover} aria-hidden="true">
+                  <div className={styles.modelCard}>
+                    <span className={styles.eyebrow}>Model</span>
+                    <span className={styles.modelSymbol}>✳</span>
+                    <strong>Qwen Image 3.0</strong>
+                    <span>Text to Image</span>
+                  </div>
+                  <span className={styles.connector} />
+                  <div className={styles.properties}>
+                    <span className={styles.eyebrow}>Properties</span>
+                    <span>Prompt</span>
+                    <div>A quiet cafe, morning light.</div>
+                    <span>Aspect ratio</span>
+                    <div>16:9 <span>⌄</span></div>
+                    <span className={styles.ready}>Ready to create</span>
+                  </div>
+                  <span className={styles.coverNote}>Schema-driven UI · Illustration</span>
+                </div>
+              ) : w.coverImage ? (
+                <div className={styles.cafeCover}>
+                  <Image {...w.coverImage} src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${w.coverImage.src}`} sizes="(max-width: 760px) 90vw, 660px" />
+                </div>
+              ) : <div className={styles.placeholder} style={{ backgroundImage: w.cover }} />}
+            </Link>
+            <div className={styles.copy}>
+              <span className={styles.meta}>{w.role} · {w.year}</span>
+              <h2><Link href={`/work/${w.slug}`}>{w.title}<span aria-hidden="true">↗</span></Link></h2>
+              <p>{w.summary}</p>
+              <Link href={`/work/${w.slug}`} className={styles.read}>View case study <span aria-hidden="true">↗</span></Link>
             </div>
-          </Link>
+          </article>
         ))}
       </div>
     </div>
