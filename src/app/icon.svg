@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <title>Tan Luc</title>
   <rect width="64" height="64" rx="15" fill="#f5f5f4"/>
-  <g fill="none" stroke="#65625f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="matrix(1 0 -.1 1 1 0)">
-    <path d="M25 17v25q0 5 5 5 3 0 5-2M17 28h17"/>
-    <path d="M45 17v25q0 5 5 5"/>
+  <g fill="#65625f">
+    <path transform="translate(10 48.4) scale(.033 -.03058)" d="M130 794L146 881H672L659 794ZM283 227Q278 209 274.5 194.5T269 168.5T267 149Q267 131 273.5 123T292 115Q313 115 349.5 138T432.5 203.5T529 307L571 273Q523 206 476.5 152.5T386 60.5T301.5 2T224-18Q179-18 152.5 8T126 96Q126 123 132 160T152 246L384 1061H525Z"/>
+    <path transform="translate(34 48.5) scale(.027 -.02275)" d="M410 1268Q392 1283 372 1296.5T328 1322.5T275 1345L285 1378L573 1430H599L191 82L175 115Q211 112 256 124T350.5 163.5T448 232L479 192Q403 110 340 64T225-1T127-20Q76-20 53.5-4T43 53Z"/>
   </g>
 </svg>
