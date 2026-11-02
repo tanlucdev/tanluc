@@ -106,6 +106,12 @@ export const WORK: CaseStudy[] = [
     summary:
       "Turning everyday gratitude into a habit through a personal journal and a shared community.",
     cover: "linear-gradient(135deg, #e8b93c 0%, #a67c14 100%)",
+    coverImage: {
+      src: "/images/work/grateful-forum/discover.webp",
+      alt: "Grateful Forum homepage introducing private journaling and shared gratitude",
+      width: 1440,
+      height: 1000,
+    },
     url: "https://grateful.forum",
     sections: [
       {
@@ -118,7 +124,7 @@ export const WORK: CaseStudy[] = [
       },
       {
         heading: "The outcome",
-        body: "Delivered a complete application that brings personal journaling, habit tracking, and community interaction together in one experience. The project demonstrates end-to-end frontend development across a multi-feature application, from responsive UI and authentication flows to structured user interactions. While Grateful has not launched publicly, the completed product establishes a foundation for future user testing and validation.",
+        body: "Delivered an application that brings personal journaling, habit tracking, and community interaction together in one experience. The project demonstrates end-to-end frontend development across responsive UI, authentication flows and structured user interactions. A public feed preview is available at grateful.forum.",
       },
     ],
   },

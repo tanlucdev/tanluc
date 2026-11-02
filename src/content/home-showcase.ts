@@ -7,7 +7,7 @@ export type HomeShowcaseProject = {
   summary: string;
   stats?: readonly string[];
   url?: string;
-  media: "models" | "canvas" | "tools" | "execution" | "artifacts" | "cafemaps" | "medichims";
+  media: "models" | "canvas" | "tools" | "execution" | "artifacts" | "cafemaps" | "medichims" | "grateful";
   referenceMedia?: boolean;
 };
 
@@ -68,4 +68,13 @@ export const HOME_SHOWCASE: readonly HomeShowcaseProject[] = [
     media: "medichims",
   },
 
+  {
+    slug: "grateful-forum",
+    company: "Independent product",
+    title: "Grateful Forum",
+    role: "Full-stack Engineer",
+    summary: "I built Grateful Forum with React, Next.js and TypeScript, bringing guided writing, personal journaling, habit tracking and community sharing into a bilingual experience. Private reflection and shared gratitude come together through a daily writing practice.",
+    url: "https://grateful.forum/",
+    media: "grateful",
+  },
 ];

@@ -206,7 +206,7 @@ function WorkflowExecutionMedia({ running }: { running: boolean }) {
 }
 
 function ProjectMedia({ project, running }: { project: HomeShowcaseProject; running: boolean }) {
-  const media = project.media === "models" ? <DynamicModelsMedia running={running} /> : project.media === "canvas" ? <CinematicWorkflow compact running={running} /> : project.media === "tools" ? <CreativeToolsMedia running={running} /> : project.media === "execution" ? <WorkflowExecutionMedia running={running} /> : project.media === "medichims" ? <MedicHimsMedia /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} running={running} /> : <ArtifactMedia running={running} />;
+  const media = project.media === "models" ? <DynamicModelsMedia running={running} /> : project.media === "canvas" ? <CinematicWorkflow compact running={running} /> : project.media === "tools" ? <CreativeToolsMedia running={running} /> : project.media === "execution" ? <WorkflowExecutionMedia running={running} /> : project.media === "medichims" ? <MedicHimsMedia /> : project.media === "cafemaps" ? <CafeMapsMedia project={project} running={running} /> : project.media === "grateful" ? <GratefulMedia running={running} /> : <ArtifactMedia running={running} />;
   return <div className={styles.mediaFrame}>{media}{project.referenceMedia && <span className={styles.reference} data-work-reference>Temporary reference preview; not portfolio work</span>}</div>;
 }
 
@@ -245,7 +245,7 @@ function MedicHimsMedia() {
   </div>;
 }
 
-function CafeScreenTour({ label, screens, running }: { label: string; screens: { file: string; title: string; alt: string }[]; running: boolean }) {
+function CafeScreenTour({ label, screens, running, directory = "cafemaps" }: { label: string; screens: { file: string; title: string; alt: string }[]; running: boolean; directory?: string }) {
   const [ref, visible] = useVisibility<HTMLDivElement>(0.15);
   const { reduced, hidden } = useMotionPreference();
   const [index, setIndex] = useState(0);
@@ -258,8 +258,19 @@ function CafeScreenTour({ label, screens, running }: { label: string; screens: {
     return () => window.clearTimeout(timer);
   }, [active, index, screens.length]);
   return <div ref={ref} className={styles.cafeTour} role="region" aria-label={label} data-running={active} data-screen={index}>
-    <div className={styles.cafeTourWindow} onMouseEnter={() => setInteracting(true)} onMouseLeave={() => setInteracting(false)} onFocusCapture={() => setInteracting(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setInteracting(false); }}><div className={styles.cafeTourTrack} style={{ transform: `translateY(-${index * 100}%)` }}>{screens.map((screen, position) => <a key={screen.file} className={styles.cafeTourSlide} href={`${asset}/cafemaps/${screen.file}.webp`} target="_blank" rel="noreferrer" aria-label={`${screen.alt} (opens in a new tab)`} aria-hidden={position !== index} inert={position !== index}><img src={`${asset}/cafemaps/${screen.file}.webp`} alt={screen.alt} width={1440} height={1000} loading={visible ? "eager" : "lazy"} /></a>)}</div></div>
+    <div className={styles.cafeTourWindow} onMouseEnter={() => setInteracting(true)} onMouseLeave={() => setInteracting(false)} onFocusCapture={() => setInteracting(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setInteracting(false); }}><div className={styles.cafeTourTrack} style={{ transform: `translateY(-${index * 100}%)` }}>{screens.map((screen, position) => <a key={screen.file} className={styles.cafeTourSlide} href={`${asset}/${directory}/${screen.file}.webp`} target="_blank" rel="noreferrer" aria-label={`${screen.alt} (opens in a new tab)`} aria-hidden={position !== index} inert={position !== index}><img src={`${asset}/${directory}/${screen.file}.webp`} alt={screen.alt} width={1440} height={1000} loading={visible ? "eager" : "lazy"} /></a>)}</div></div>
     <div className={styles.cafeTourControls}><div role="group" aria-label={`${label} screens`}>{screens.map((screen, position) => <button key={screen.file} type="button" aria-pressed={position === index} onClick={() => { setIndex(position); setPaused(true); }}>{screen.title}</button>)}</div><button type="button" aria-label={`${paused ? "Resume" : "Pause"} ${label}`} aria-pressed={paused} onClick={() => setPaused((value) => !value)}>{paused ? "Play" : "Pause"}</button></div>
+  </div>;
+}
+
+function GratefulMedia({ running }: { running: boolean }) {
+  return <div className={styles.gratefulShowcase}>
+    <CafeScreenTour label="Grateful Forum preview" directory="grateful-forum" running={running} screens={[
+      { file: "community", title: "Community", alt: "Grateful Forum public feed preview with shared gratitude notes and weekly writing rhythm" },
+      { file: "practice", title: "Practice", alt: "Grateful Forum landing page demo of the practice calendar and daily gratitude notes" },
+      { file: "reflect", title: "Reflect", alt: "Grateful Forum landing page demo of the personal journal and reflection prompts" },
+    ]} />
+    <p className={styles.gratefulSource}>Public feed preview & landing page demos · Actual website captures</p>
   </div>;
 }
 
@@ -428,7 +439,7 @@ export default function WorkShowcase() {
   return <section id="work" className={`portfolio-home-work ${styles.showcase}`} aria-labelledby="work-title">
     <div className={styles.editorial}>
       <aside className={styles.rail}><nav ref={navRef} className={styles.nav} data-revealed={navRevealed} aria-label="Selected work">{HOME_SHOWCASE.map((project) => <a key={project.slug} href={`#work-${project.slug}`} aria-current={active === project.slug ? "location" : undefined} onClick={(event) => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, "", `#work-${project.slug}`); const target = document.getElementById(`work-${project.slug}`); if (target) { moveTo(target, true); target.focus({ preventScroll: true }); } }}>{project.title}</a>)}<span className={styles.dot} data-work-dot aria-hidden="true" /></nav></aside>
-      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span>{project.role && <span>{project.role}</span>}{project.period && <span>{project.period}</span>}</div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p>{project.url && <a className={styles.projectLink} href={project.url} target="_blank" rel="noreferrer">Visit cafemaps.net</a>}</Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
+      <div className={styles.content}><h2 id="work-title" className={styles.label}><span className={styles.srOnly}>Work</span></h2>{HOME_SHOWCASE.map((project) => <section key={project.slug} id={`work-${project.slug}`} className={styles.project} tabIndex={-1} aria-labelledby={`work-${project.slug}-title`}><Reveal><header className={styles.header}><h3 id={`work-${project.slug}-title`} className={styles.title}>{project.title}</h3><div className={styles.meta}><span>{project.company}</span>{project.role && <span>{project.role}</span>}{project.period && <span>{project.period}</span>}</div></header><ProjectMedia project={project} running={running} /><p className={styles.summary}>{project.summary}</p>{project.url && <a className={styles.projectLink} href={project.url} target="_blank" rel="noreferrer">Visit {new URL(project.url).hostname}</a>}</Reveal></section>)}<button className={styles.motionControl} type="button" aria-pressed={motionPaused} onClick={() => setMotionPaused((value) => !value)}>{motionPaused ? "Resume motion" : "Pause motion"}</button></div>
     </div>
   </section>;
 }

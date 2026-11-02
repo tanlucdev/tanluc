@@ -49,8 +49,8 @@ try {
   await page.locator(work).scrollIntoViewIfNeeded();
   await page.waitForTimeout(150);
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector("[data-work-dot]")).opacity) > .95);
-  assert.equal(await page.locator("section[id^='work-']").count(), 6, "six work sections render");
-  assert.deepEqual(await page.locator(".portfolio-home-work nav[aria-label='Selected work'] a").allTextContents(), ["Dynamic Models", "Visual Workflow Editor", "Creative & Media Tools", "Workflow Execution", "Cafe Maps", "MedicHIMS"], "project navigation follows the case-study order");
+  assert.equal(await page.locator("section[id^='work-']").count(), 7, "seven work sections render");
+  assert.deepEqual(await page.locator(".portfolio-home-work nav[aria-label='Selected work'] a").allTextContents(), ["Dynamic Models", "Visual Workflow Editor", "Creative & Media Tools", "Workflow Execution", "Cafe Maps", "MedicHIMS", "Grateful Forum"], "project navigation follows the case-study order");
   assert.equal(await page.locator("#work-cafemaps").textContent().then((text) => text?.includes("15,000+ visitors") && text.includes("40,000+ page views")), true, "Cafemaps verified stats render");
   assert.equal(await page.locator("#work-cafemaps").getByRole("link", { name: "Visit cafemaps.net" }).getAttribute("href"), "https://cafemaps.net", "Cafemaps links to the public product");
   assert.equal(await page.locator("[data-work-reference]").count(), 0, "all work previews show the actual product or labelled demonstrations");
@@ -292,11 +292,28 @@ try {
   await reduced.locator(work).scrollIntoViewIfNeeded();
   await reduced.waitForTimeout(150);
   assert.equal(await reduced.locator("#work-onemedic img").count(), 2, "reduced motion retains both MedicHIMS galleries");
+  const grateful = reduced.getByRole("region", { name: "Grateful Forum preview", exact: true });
+  await grateful.scrollIntoViewIfNeeded();
+  assert.equal(await grateful.getAttribute("data-running"), "false", "Grateful respects reduced motion");
+  assert.equal(await reduced.locator("#work-grateful-forum").getByRole("link", { name: "Visit grateful.forum", exact: true }).getAttribute("href"), "https://grateful.forum/");
+  for (const width of [320, 390, 768, 1440]) {
+    await reduced.setViewportSize({ width, height: 900 });
+    for (const [index, title] of ["Community", "Practice", "Reflect"].entries()) {
+      const button = grateful.getByRole("button", { name: title, exact: true });
+      await button.focus();
+      await button.press("Enter");
+      assert.equal(await grateful.getAttribute("data-screen"), String(index));
+      assert.equal(await grateful.getByRole("link").count(), 1, "only the selected Grateful screen is accessible");
+      assert.ok(await grateful.getByRole("link").evaluate((node) => Math.abs(node.clientHeight - node.parentElement.clientHeight) < 2), "Grateful slides fit the fixed frame without clipping");
+      await grateful.locator("img").nth(index).evaluate((image) => image.decode());
+    }
+    assert.ok(await reduced.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Grateful fits ${width}px`);
+  }
 
   const noJsContext = await browser.newContext({ javaScriptEnabled: false });
   const noJs = await noJsContext.newPage();
   await noJs.goto(base, { waitUntil: "domcontentloaded" });
-  assert.equal(await noJs.locator("section[id^='work-']").count(), 6, "server-rendered work remains visible without JavaScript");
+  assert.equal(await noJs.locator("section[id^='work-']").count(), 7, "server-rendered work remains visible without JavaScript");
   assert.match(await noJs.getByRole("link", { name: "Stack & experience", exact: true }).getAttribute("href"), /\/about\/?#how-i-build$/, "Home retains the profile teaser alongside the newer showcase");
   await noJsContext.close();
   console.log("work showcase: pass");
