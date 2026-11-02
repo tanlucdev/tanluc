@@ -13,8 +13,8 @@ const PHOTOS = [
   { file: "second-half-marathon.webp", label: "Second half marathon", angle: 2 },
   { file: "trekking-bich-dam.webp", label: "Trekking Bich Dam", angle: -3 },
   { file: "trekking-dinh-moutain.webp", label: "Trekking Dinh moutain", angle: 1 },
-  { file: "trekking-nui-dinh.webp", label: "Trekking Nui Dinh", angle: 0 },
-  { file: "trekking-ta-hine.webp", label: "Trekking Ta Hine", angle: 5 },
+  { file: "marathon-with-colleague.webp", label: "Marathon with colleague", angle: 0 },
+  { file: "trekking-ta-hine-with-colleague.webp", label: "Trekking Ta Hine with colleague", angle: 5 },
 ];
 
 export function RecentGallery({ basePath = "" }: { basePath?: string }) {
