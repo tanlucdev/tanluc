@@ -40,7 +40,7 @@ body {
 }
 @keyframes page-arrive { from { opacity: 0; } to { opacity: 1; } }
 
-.portfolio-home { overflow-x: clip; }
+.portfolio-home { --work-paper-opacity: 0; overflow-x: clip; }
 
 .meadow-hero {
   position: relative;
@@ -239,7 +239,6 @@ body {
 .meadow-weather span { opacity: 0.78; }
 
 .portfolio-home-work {
-  --work-paper-opacity: 0;
   position: relative;
   z-index: 10;
   isolation: isolate;
@@ -371,9 +370,7 @@ body {
   .meadow-hero__interests { gap: 12px 8px; margin-top: 32px; font-size: 18px; line-height: 1.65; }
   .meadow-token { width: 48px; }
   .meadow-ground { width: max(100vw, 680px); }
-  .meadow-scene[data-scroll-state] { position: absolute; top: 0; height: 100%; opacity: 1; transform: none; visibility: visible; }
-  .meadow-ground { opacity: 1; filter: none; clip-path: none; transform: translateX(-50%) scaleY(0.84); }
-  .meadow-tree-canvas, .meadow-grass-canvas { opacity: 1; filter: none; transform: none; }
+  .meadow-scene { position: absolute; top: 0; height: 100%; opacity: calc(1 - var(--work-paper-opacity)); transform: none; will-change: opacity; }
   .meadow-weather { display: none; }
   .portfolio-work { display: block; }
   .portfolio-work__rail { position: static; margin-bottom: 2.5rem; }

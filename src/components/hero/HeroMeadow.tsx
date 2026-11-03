@@ -101,6 +101,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     let width = 0;
     let height = 0;
     let frame = 0;
+    let sceneVisible = true;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
     const mouse = { x: 0, y: 0, active: false };
@@ -247,6 +248,8 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     };
 
     const draw = (time: number) => {
+      frame = 0;
+      if (!sceneVisible || document.hidden) return;
       const treeContext = treeCanvas.getContext("2d");
       const grassContext = grassCanvas.getContext("2d");
       if (!treeContext || !grassContext || !width || !height) return;
@@ -437,6 +440,18 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
 
     const observer = new ResizeObserver(resize);
     observer.observe(treeCanvas.parentElement!);
+    const resume = () => {
+      cancelAnimationFrame(frame);
+      previousTime = 0;
+      treeTime = 0;
+      draw(performance.now());
+    };
+    const visibility = new IntersectionObserver(([entry]) => {
+      sceneVisible = entry.isIntersecting;
+      resume();
+    });
+    visibility.observe(treeCanvas.parentElement!);
+    document.addEventListener("visibilitychange", resume);
     grass.onload = () => { seedGrass(); if (reducedMotion) draw(0); };
     grass.src = `${asset}/grass.png`;
     tree.onload = () => { if (reducedMotion) draw(0); };
@@ -447,6 +462,8 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     resize();
     draw(0);
     return () => {
+      visibility.disconnect();
+      document.removeEventListener("visibilitychange", resume);
       grass.onload = null;
       tree.onload = null;
       window.removeEventListener("pointermove", moveCursor);
@@ -702,7 +719,8 @@ export function HeroMeadow() {
   useEffect(() => {
     const scene = sceneRef.current;
     const work = document.getElementById("work");
-    if (!scene || !work) return;
+    const home = scene?.closest<HTMLElement>(".portfolio-home");
+    if (!scene || !work || !home) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let viewportHeight = Math.max(1, window.visualViewport?.height ?? window.innerHeight);
@@ -718,7 +736,8 @@ export function HeroMeadow() {
       const exit = eased ** 1.08;
       const meadowFade = clamp((eased - 0.12) / 0.88, 0, 1);
       const treeFade = clamp((meadowFade - 0.16) / 0.84, 0, 1);
-      const lateExit = smootherstep(clamp((current - 0.72) / 0.28, 0, 1));
+      const lateProgress = clamp((current - 0.72) / 0.28, 0, 1);
+      const lateExit = lateProgress * lateProgress * (3 - 2 * lateProgress);
       const exitDistance = viewportHeight + Math.max(120, viewportHeight * 0.18);
       const dissolveEdge = -24 + meadowFade * 150;
 
@@ -734,7 +753,7 @@ export function HeroMeadow() {
       [0, 4, -2, 6, 1, -4, 3, -1].forEach((offset, index) => {
         scene.style.setProperty(`--meadow-dissolve-edge-${index + 1}`, `${(dissolveEdge + offset).toFixed(2)}%`);
       });
-      work.style.setProperty("--work-paper-opacity", meadowFade.toFixed(4));
+      home.style.setProperty("--work-paper-opacity", meadowFade.toFixed(4));
       const scrollState = current <= 0.002 ? "hero" : current >= 0.998 ? "hidden" : "transitioning";
       if (scene.dataset.scrollState === "hero" && scrollState !== "hero") window.dispatchEvent(new Event("portfolio:welcome-gust-stop"));
       scene.dataset.scrollState = scrollState;
@@ -791,7 +810,7 @@ export function HeroMeadow() {
       window.removeEventListener("resize", update);
       window.visualViewport?.removeEventListener("resize", update);
       reducedMotion.removeEventListener("change", update);
-      work.style.removeProperty("--work-paper-opacity");
+      home.style.removeProperty("--work-paper-opacity");
     };
   }, []);
 
