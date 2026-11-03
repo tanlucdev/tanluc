@@ -1,3 +1,13 @@
+.home {
+  background: linear-gradient(to top, #242321 20px, transparent 20px);
+}
+
+.bottom {
+  display: flow-root;
+  border-radius: 0 0 20px 20px;
+  background: var(--paper);
+}
+
 .profileTeaser {
   width: min(100% - 64px, 740px);
   margin: 0 auto;
@@ -27,7 +37,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  width: min(100% - 64px, 1368px);
+  width: calc(100% - clamp(36px, 8.6vw, 176px));
   margin: 0 auto;
   border-top: 1px solid #24232126;
   padding: 28px 0;

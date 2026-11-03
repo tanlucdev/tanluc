@@ -1,5 +1,5 @@
 export const PROFILE = {
-  resumePath: "/images/home/CV_PostCo.pdf",
+  resumePath: "/documents/nguyen-tan-luc-cv.pdf",
   homeTeaser: {
     title: "Stack & experience",
     copy: "The tools, systems, and product work behind the projects above.",
