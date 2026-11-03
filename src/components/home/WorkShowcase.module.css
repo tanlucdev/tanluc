@@ -8,7 +8,7 @@
 .showcase {
   width: min(100% - 64px, 1445px);
   margin: 0 auto;
-  padding: 52px 0 180px;
+  padding: 52px 0 84px;
   background: transparent;
 }
 
@@ -289,7 +289,7 @@
   .nav[data-ready="true"]:not([data-revealed="true"]) .dot { opacity: 0; }
   .nav[data-ready="true"] .dot { transition: transform .25s cubic-bezier(.77, 0, .175, 1), opacity .6s cubic-bezier(.23, 1, .32, 1) .15s; }
 }
-@media (min-width: 1080px) and (prefers-reduced-motion: no-preference) { .project + .project { margin-top: max(200px, 30svh); } .showcase { padding-bottom: max(180px, 50svh); } }
+@media (min-width: 1080px) and (prefers-reduced-motion: no-preference) { .project + .project { margin-top: max(200px, 30svh); } }
 
 @media (max-width: 1079px) { .editorial { display: block; } .rail { display: none; } .label { margin-top: 32px; } }
 @media (max-width: 700px) {

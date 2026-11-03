@@ -1,10 +1,5 @@
 export const PROFILE = {
-  resumePath: "/images/home/CV_PostCo.pdf",
-  homeTeaser: {
-    title: "Stack & experience",
-    copy: "The tools, systems, and product work behind the projects above.",
-    href: "/about#how-i-build",
-  },
+  resumePath: "/documents/nguyen-tan-luc-cv.pdf",
   stack: [
     {
       label: "Frontend",
