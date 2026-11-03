@@ -60,7 +60,7 @@ export const PROFILE = {
       role: "Frontend Developer",
       period: "Aug - Oct 2025",
       contributions: [
-        "Built four production pages for a university management system, turning requirements into working interfaces.",
+        "Built 10 production pages for a university management system, turning requirements into working interfaces.",
         "Connected the React interfaces to backend data through a BFF layer, using Redux to manage application state.",
       ],
     },
