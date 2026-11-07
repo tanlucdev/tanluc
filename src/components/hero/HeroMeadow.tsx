@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
+import RebuildScene from "./RebuildScene";
 
 type Activity = "photo" | "bike" | "walk";
 type Pointer = { x: number; y: number; active: boolean };
@@ -100,6 +101,7 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
     let pointerDirection = 1;
     let width = 0;
     let height = 0;
+    let treeSpace = Infinity;
     let frame = 0;
     let sceneVisible = true;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -238,6 +240,10 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       width = bounds.width;
       height = bounds.height;
+      const introduction = treeCanvas.closest(".meadow-hero")?.querySelector(".meadow-hero__copy > p");
+      treeSpace = introduction && (width < 901 || height < 600)
+        ? Math.max(90, (terrain.current.yAt(width * 0.85, width, height) - (introduction.getBoundingClientRect().bottom - bounds.top) - 20) * 1114 / 1412)
+        : Infinity;
       for (const canvas of [treeCanvas, grassCanvas]) {
         canvas.width = Math.round(width * ratio);
         canvas.height = Math.round(height * ratio);
@@ -256,13 +262,13 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
 
       treeContext.clearRect(0, 0, width, height);
       grassContext.clearRect(0, 0, width, height);
-      const treeWidth = width < 701
+      const treeWidth = Math.min(treeSpace, width < 701
         ? Math.min(Math.max(width * 0.56, 216), 232)
         : width < 901
           ? Math.min(Math.max(width * 0.31, 238), 330)
           : width >= 1800 && height >= 900
             ? Math.min(width * 0.2, height * 0.46)
-            : Math.min(Math.max(width * 0.22, 240), 322);
+            : Math.min(Math.max(width * 0.22, 240), 322));
       const treeHeight = treeWidth * (1412 / 1114);
       const treeRight = width < 701 ? -18 : width < 901 ? -10 : Math.min(Math.max(width * 0.04, 8), 64);
       const treeLeft = width - treeRight - treeWidth;
@@ -440,6 +446,8 @@ function MeadowCanvas({ pointer, terrain }: { pointer: RefObject<Pointer>; terra
 
     const observer = new ResizeObserver(resize);
     observer.observe(treeCanvas.parentElement!);
+    const introduction = treeCanvas.closest(".meadow-hero")?.querySelector(".meadow-hero__copy > p");
+    if (introduction) observer.observe(introduction);
     const resume = () => {
       cancelAnimationFrame(frame);
       previousTime = 0;
@@ -858,6 +866,7 @@ export function HeroMeadow() {
             ))}
           </span>
         </div>
+        <RebuildScene />
       </div>
 
       <div className={`meadow-scene ${active.photo ? "is-photo-active" : ""}`} ref={sceneRef}>

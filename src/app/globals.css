@@ -45,7 +45,7 @@ body {
 .meadow-hero {
   position: relative;
   height: calc(100svh - 57px);
-  min-height: calc(100svh - 57px);
+  min-height: max(calc(100svh - 57px), 520px);
   overflow: visible;
 }
 
@@ -119,6 +119,7 @@ body {
 .meadow-cursor img { position: absolute; top: 4px; left: 0; width: auto; max-width: none; height: 42px; opacity: 0; transition: opacity 140ms ease; }
 .meadow-cursor[data-state="idle"] .meadow-cursor__idle,
 .meadow-cursor[data-state="blow"] .meadow-cursor__blow { opacity: 1; }
+.meadow-hero[data-rebuilding="true"] .meadow-cursor { visibility: hidden; }
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) { .meadow-cursor { display: none; } }
 
 .meadow-scene {
@@ -145,7 +146,7 @@ body {
   right: 0;
   left: 0;
   height: calc(100svh - 57px);
-  min-height: 0;
+  min-height: 520px;
   backface-visibility: hidden;
   contain: layout paint;
   opacity: var(--scene-exit-opacity);
@@ -361,6 +362,17 @@ body {
 .portfolio-footer a { color: inherit; }
 .portfolio-footer a:hover { color: var(--ink); }
 
+@media (max-height: 577px) {
+  .meadow-scene { position: absolute; top: 0; height: 100%; }
+}
+
+@media (max-height: 599px) and (min-width: 701px) {
+  .meadow-hero { min-height: calc(100svh - 57px); }
+  .meadow-scene { min-height: 0; }
+  .meadow-hero__copy { padding-top: 60px; }
+  .meadow-hero__interests { margin-top: 12px; }
+}
+
 @media (max-width: 700px) {
   :root { --cell: 38px; }
   .meadow-hero { overflow: clip; }
@@ -465,6 +477,8 @@ body:has(.photography-page) { background-image: none; }
 @media (min-width: 701px) {
   .recent-print:focus-within .recent-print__paper { transform: scale(1.85); transform-origin: center bottom; }
   .recent-print:focus-within .recent-print__caption, .recent-print:focus-within .recent-print__letter { opacity: 1; transition: none; }
+  .recent-print:first-child .recent-print__paper { transform-origin: left bottom; }
+  .recent-print:last-child .recent-print__paper { transform-origin: right bottom; }
 }
 @media (prefers-reduced-motion: reduce) {
   .recent-print .recent-print__paper, .recent-print .recent-print__letter { transition: none; }

@@ -63,7 +63,7 @@ export function RecentGallery({ basePath = "" }: { basePath?: string }) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img alt="" className="recent-print__image block size-full object-cover" onLoad={(event) => { event.currentTarget.dataset.loaded = "true"; }} src={`${basePath}/images/about/recently/${encodeURIComponent(item.file)}`} />
               </button>
-              <figcaption className={`recent-print__caption pointer-events-none absolute top-[calc(4px-85%)] hidden w-max max-w-40 font-serif text-[16px] leading-[1.45] text-ink-soft opacity-0 min-[701px]:block ${index >= PHOTOS.length - 2 ? "right-[calc(142.5%+12px)] text-right" : "left-[calc(142.5%+12px)]"}`}>
+              <figcaption className={`recent-print__caption pointer-events-none absolute top-[calc(4px-85%)] hidden w-max max-w-40 font-serif text-[16px] leading-[1.45] text-ink-soft opacity-0 min-[701px]:block ${index >= Math.ceil(PHOTOS.length / 2) ? "right-[calc(142.5%+12px)] text-right" : "left-[calc(142.5%+12px)]"}`}>
                 <span className="sr-only">{item.label}</span>
                 <span aria-hidden="true">
                   {Array.from(item.label).map((letter, letterIndex) => (
