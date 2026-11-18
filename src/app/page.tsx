@@ -2,6 +2,8 @@ import { HeroMeadow } from "@/components/hero/HeroMeadow";
 import WorkShowcase from "@/components/home/WorkShowcase";
 import styles from "./page.module.css";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export default function Home() {
   return (
     <div className={`portfolio-home ${styles.home}`}>

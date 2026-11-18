@@ -13,8 +13,15 @@ const newsreader = Newsreader({
   style: ["normal", "italic"],
 });
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tanluc.dev"),
   title: "Tan Luc — Software Engineer",
-  description: "Portfolio of Tan Luc: product design, play, and photography.",
+  description: "Tan Luc is a software engineer based in Vietnam, building frontend and full-stack products with React, Next.js, TypeScript, and NestJS.",
+  openGraph: {
+    siteName: "Tan Luc",
+    title: "Tan Luc — Software Engineer",
+    description: "Software engineer in Vietnam. Explore AI workflow tools, Cafe Maps, MedicHIMS, and Grateful Forum.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

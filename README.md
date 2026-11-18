@@ -1,6 +1,6 @@
 # Tan Luc — Portfolio
 
-A portfolio for a senior product designer, built on a graph-paper grid. Next.js (App Router) + Tailwind.
+Tan Luc’s software engineering portfolio. Next.js (App Router) + Tailwind.
 
 ## Features
 
@@ -25,3 +25,11 @@ Placeholder covers are CSS gradients. Put About's recent-life images in `public/
 ## Deploying
 
 Push to GitHub and import into [Vercel](https://vercel.com).
+
+## Agent readiness
+
+Vercel uses the Next.js runtime: `/` negotiates Markdown with `Accept: text/markdown`, while browsers keep HTML. Missing URLs return Markdown 404s to Markdown clients; existing pages and assets retain their normal responses. `/llms.txt`, `/robots.txt`, and `/sitemap.xml` describe the public site. Keep the sitemap current when adding pages.
+
+Run `npm run build`, `npm run start -- --port 3180`, then `npm run test:agents`. Set `BASE_URL` to verify a deployed preview or production after deployment.
+
+`GITHUB_PAGES=true npm run build` keeps the static export and `/tanluc` base path. Its `.tsx` page convention excludes the runtime proxy; GitHub Pages cannot negotiate Markdown without an additional server or edge layer. Use Vercel for the audited domain.
