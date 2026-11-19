@@ -15,7 +15,7 @@ const newsreader = Newsreader({
 });
 export const metadata: Metadata = {
   title: "Tan Luc — Software Engineer",
-  description: "Portfolio of Tan Luc: product design, play, and photography.",
+  description: "Portfolio of Tan Luc, a software engineer building dependable products, thoughtful interfaces, and AI workflows.",
 };
 
 export default function RootLayout({
