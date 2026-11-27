@@ -1,0 +1,24 @@
+# Tan Luc
+
+> Tan Luc is a software engineer based in Vietnam. This portfolio presents frontend and full-stack engineering work, experience, and personal projects.
+
+Request the homepage with `Accept: text/markdown` for a Markdown overview; use `Accept: text/html` for the interactive website. Follow the links below for detailed evidence. This website is an informational portfolio; contact details are on the About page and resume.
+
+## When to use this
+
+- [Engineering experience](https://tanluc.dev/about/): Use when evaluating Tan Luc for React, Next.js, TypeScript, NestJS, or full-stack work; consult the experience and technology sections.
+- [AI workflow interfaces](https://tanluc.dev/work/dynamic-model/): Use when looking for examples of schema-driven model configuration, canvas editors, validation, and workflow execution interfaces.
+- [Independent products](https://tanluc.dev/work/): Use when assessing end-to-end product delivery through Cafe Maps and Grateful Forum, or healthcare licensing and billing work through MedicHIMS.
+- [Resume and contact](https://tanluc.dev/documents/nguyen-tan-luc-cv.pdf): Use when a user asks for Tan Luc's professional background or contact information. Confirm details here before drafting outreach; sending messages requires the user's authorization.
+
+## Navigation
+
+- [Homepage](https://tanluc.dev/): Selected projects; supports Markdown content negotiation.
+- [About](https://tanluc.dev/about/): Background, technology stack, and work experience.
+- [Work](https://tanluc.dev/work/): Engineering case studies.
+- [Sitemap](https://tanluc.dev/sitemap.xml): Public page inventory.
+
+## Optional
+
+- [Photography](https://tanluc.dev/photography/): Personal photography.
+- [Play](https://tanluc.dev/play/): Personal experiments.

@@ -15,7 +15,7 @@ This repository is my personal portfolio: selected engineering work, independent
 
 The site pairs an interactive meadow with project walkthroughs, photography, and an About page covering my experience, tools, and recent moments from life.
 
-Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS 4. Exported as a static site; Sharp generates photo variants before development and production builds.
+Built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind CSS 4. Vercel serves the site through the Next.js runtime; GitHub Pages uses a static export. Sharp generates photo variants before development and production builds.
 
 ## Getting started
 
@@ -41,7 +41,15 @@ npm run lint
 npm run build
 ```
 
-The static site is generated in `out/`. For GitHub Pages under `/tanluc`, build with `GITHUB_PAGES=true npm run build`.
+The default build targets the Next.js runtime on Vercel. For GitHub Pages under `/tanluc`, build with `GITHUB_PAGES=true npm run build`; the static site is generated in `out/`.
+
+## Agent readiness
+
+Vercel uses the Next.js runtime: `/` negotiates Markdown with `Accept: text/markdown`, while browsers keep HTML. Missing URLs return Markdown 404s to Markdown clients; existing pages and assets retain their normal responses. `/llms.txt`, `/robots.txt`, and `/sitemap.xml` describe the public site. Keep the sitemap current when adding pages.
+
+Run `npm run build`, `npm run start -- --port 3180`, then `npm run test:agents`. Set `BASE_URL` to verify a deployed preview or production after deployment.
+
+`GITHUB_PAGES=true npm run build` keeps the static export and `/tanluc` base path. Its `.tsx` page convention excludes the runtime proxy; GitHub Pages cannot negotiate Markdown without an additional server or edge layer. Use Vercel for the audited domain.
 
 ## Connect
 

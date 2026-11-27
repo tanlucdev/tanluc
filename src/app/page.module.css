@@ -1,10 +1,9 @@
 .home {
-  background: linear-gradient(to top, #242321 20px, transparent 20px);
+  background: var(--paper);
 }
 
 .bottom {
   display: flow-root;
-  border-radius: 0 0 20px 20px;
   background: var(--paper);
 }
 
