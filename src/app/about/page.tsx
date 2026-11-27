@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { RecentGallery } from "@/components/about/RecentGallery";
+import { TechStackHighlights } from "@/components/about/TechStackHighlights";
 import { PROFILE } from "@/content/profile";
 import type { CSSProperties } from "react";
 import styles from "./page.module.css";
@@ -45,7 +46,7 @@ export default function About() {
 
         <div className="about-portrait-card order-1 mx-auto w-[200px] rounded-[2px] bg-white p-[10px] min-[701px]:order-2 min-[701px]:mx-0 min-[701px]:w-[248px]">
           <div className="relative aspect-[3/4] overflow-hidden rounded-[8px]">
-            <Image alt="Tan Luc by the lake on a solo trip to Da Lat" className="object-cover" fill loading="eager" sizes="(max-width: 700px) 180px, 228px" src={`${basePath}/images/about/recently/da-lat-solo-trip.webp`} />
+            <Image alt="Tan Luc by the lake on a solo trip to Da Lat" className="object-cover" fill loading="eager" sizes="(max-width: 700px) 180px, 228px" src={`${basePath}/images/about/recently/generated/da-lat-solo-trip.webp`} />
           </div>
         </div>
       </section>
@@ -59,7 +60,7 @@ export default function About() {
           <h2 id="stack-title" className={styles.title}>How I build</h2>
           <p className={styles.aside}>The tools behind the work</p>
         </header>
-        <div>
+        <TechStackHighlights>
           {PROFILE.stack.map((group) => (
             <article key={group.label} className={styles.group}>
               <h3 className={styles.category}>{group.label}</h3>
@@ -67,7 +68,7 @@ export default function About() {
                 <ul className={styles.tools} aria-label={`${group.label} tools`}>
                   {group.technologies.map((tool) => (
                     <li key={tool.name}>
-                      <a className={styles.tool} href={tool.href} target="_blank" rel="noreferrer" style={{ "--brand": tool.color } as CSSProperties}>
+                      <a className={styles.tool} data-stack-tool href={tool.href} target="_blank" rel="noreferrer" style={{ "--brand": tool.color } as CSSProperties}>
                         <span className={styles.mark}>
                           <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href={`${basePath}/images/stack.svg#${tool.icon}`} /></svg>
                         </span>
@@ -80,7 +81,7 @@ export default function About() {
               </div>
             </article>
           ))}
-        </div>
+        </TechStackHighlights>
       </section>
 
       <section className={styles.section} aria-labelledby="experience-title">

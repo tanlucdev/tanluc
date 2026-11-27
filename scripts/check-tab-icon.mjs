@@ -10,17 +10,17 @@ try {
   const green = await icons();
   assert(green.some((href) => href.includes("/icon.svg")));
   const response = await page.request.get(green.find((href) => href.includes("/icon.svg")));
-  assert((await response.text()).includes('fill="#5d631d"'));
+  assert.match(await response.text(), /<circle[^>]*fill="#5d631d"/);
   for (const hidden of [true, false, true, false]) {
     await page.evaluate((value) => {
       Object.defineProperty(document, "hidden", { configurable: true, value });
       document.dispatchEvent(new Event("visibilitychange"));
     }, hidden);
     const current = await icons();
-    if (hidden) assert(current.every((href) => decodeURIComponent(href).includes('fill="#93938c"')));
+    if (hidden) assert(current.every((href) => /<circle[^>]*fill="#93938c"/.test(decodeURIComponent(href))));
     else assert.deepEqual(current, green);
   }
-  console.log("PASS: green square; visibility changes switch to gray and restore green twice");
+  console.log("PASS: green circle switches to gray and restores green twice");
 } finally {
   await browser.close();
 }

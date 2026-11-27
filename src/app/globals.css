@@ -455,30 +455,44 @@ body:has(.photography-page) { background-image: none; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .about-portrait-card:hover { transform: rotate(-1deg) scale(1.01); }
 }
-@media (scripting: enabled) {
-  .recent-print__image { opacity: 0; }
-  .recent-print__image[data-loaded="true"] { opacity: 1; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .recent-print__image[data-loaded="true"] {
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal="pending"] .recent-print__image { opacity: 0; }
+  [data-reveal="ready"] .recent-print__image[data-reveal-photo] {
     animation: recent-photo-arrive 240ms cubic-bezier(0.23, 1, 0.32, 1) calc(var(--print-index, 0) * 30ms) backwards;
   }
 }
 @keyframes recent-photo-arrive { from { opacity: 0; } to { opacity: 1; } }
 .recent-print__letter { opacity: 0; }
 @media (min-width: 701px) and (hover: hover) and (pointer: fine) {
-  .recent-print__paper { transform-origin: center bottom; transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1); }
-  .recent-print:hover .recent-print__paper { transform: scale(1.85); }
+  .recent-print__paper { transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1); }
+  .recent-print[data-hovered] .recent-print__paper:focus-visible { outline: none; }
+  .recent-print:hover .recent-print__paper { transform: scale(var(--print-zoom)); }
   .recent-print:hover .recent-print__caption, .recent-print:hover .recent-print__letter { opacity: 1; }
 }
 @media (min-width: 701px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .recent-print:hover .recent-print__letter { transition: opacity 1ms step-end calc(150ms + var(--letter-index) * 30ms); }
 }
 @media (min-width: 701px) {
-  .recent-print:focus-within .recent-print__paper { transform: scale(1.85); transform-origin: center bottom; }
+  .recent-print { --print-zoom: 1.85; --print-pivot: 50%; --caption-gap: 12px; }
+  .recent-print:first-child { --print-pivot: 0%; }
+  .recent-print:last-child { --print-pivot: 100%; }
+  .recent-print:is(:first-child, :last-child) { --caption-gap: 32px; }
+  .recent-print__paper { transform-origin: var(--print-pivot) bottom; }
+  .recent-print:focus-within .recent-print__paper { transform: scale(var(--print-zoom)); }
   .recent-print:focus-within .recent-print__caption, .recent-print:focus-within .recent-print__letter { opacity: 1; transition: none; }
-  .recent-print:first-child .recent-print__paper { transform-origin: left bottom; }
-  .recent-print:last-child .recent-print__paper { transform-origin: right bottom; }
+  .recent-print__caption {
+    top: calc(4px - (var(--print-zoom) - 1) * 100%);
+    left: calc(100% + (100% - var(--print-pivot)) * (var(--print-zoom) - 1) + var(--caption-gap));
+  }
+  .recent-print__caption[data-caption-before] {
+    left: auto;
+    right: calc(100% + var(--print-pivot) * (var(--print-zoom) - 1) + var(--caption-gap));
+    text-align: right;
+  }
+  .recent-print:is(:first-child, :last-child) .recent-print__caption {
+    top: auto;
+    bottom: calc(var(--print-zoom) * 100% - 20px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .recent-print .recent-print__paper, .recent-print .recent-print__letter { transition: none; }
@@ -501,7 +515,19 @@ body:has(.photography-page) { background-image: none; }
 .photo-lightbox__media img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .photo-lightbox__full { position: absolute; inset: 0; opacity: 0; transition: opacity 160ms ease-out; }
 .photo-lightbox__full[data-decoded="true"] { opacity: 1; }
-.photo-lightbox__media--print { --frame: clamp(10px, 1vw, 18px); width: min(calc(100% - 48px), calc((100dvh - 144px - 2 * var(--frame)) * var(--photo-ratio) + 2 * var(--frame))); height: min(calc((100dvw - 48px - 2 * var(--frame)) / var(--photo-ratio) + 2 * var(--frame)), calc(100dvh - 144px)); border: 1px solid rgb(36 35 33 / 0.12); padding: var(--frame); background: white; box-shadow: 0 24px 54px rgb(37 35 30 / 0.17); }
+.photo-lightbox__media--print {
+  --frame: clamp(10px, 1vw, 18px);
+  --frame-total: calc(2 * (var(--frame) + 1px));
+  --print-width: calc(100dvw - 48px - var(--frame-total));
+  --print-height: calc(100dvh - 144px - var(--frame-total));
+  width: calc(min(var(--print-width), var(--print-height) * var(--photo-ratio)) + var(--frame-total));
+  height: calc(min(var(--print-height), var(--print-width) / var(--photo-ratio)) + var(--frame-total));
+  border: 1px solid rgb(36 35 33 / 0.12);
+  padding: var(--frame);
+  background: white;
+  box-shadow: 0 24px 54px rgb(37 35 30 / 0.17);
+}
+.photo-lightbox__media--print .photo-lightbox__full { inset: var(--frame); width: calc(100% - 2 * var(--frame)); height: calc(100% - 2 * var(--frame)); }
 .photo-lightbox__navigation { position: absolute; top: 50%; right: clamp(12px, 3vw, 40px); left: clamp(12px, 3vw, 40px); display: flex; justify-content: space-between; transform: translateY(-50%); pointer-events: none; }
 .photo-lightbox__navigation button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: white; box-shadow: 0 4px 14px rgb(36 35 33 / 0.12); pointer-events: auto; cursor: pointer; }
 .photo-lightbox__navigation button:disabled { opacity: 0.3; cursor: default; }
