@@ -3,6 +3,7 @@ import { readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
+const devOrigin = process.env.PORTFOLIO_DEV_ORIGIN;
 
 const nextConfig: NextConfig = {
   ...(isGithubPages ? { output: "export" as const, pageExtensions: ["tsx"] } : {}),
@@ -16,6 +17,7 @@ const nextConfig: NextConfig = {
   },
   turbopack: { root: process.cwd() },
   experimental: { turbopackFileSystemCacheForDev: false },
+  ...(devOrigin ? { allowedDevOrigins: [devOrigin] } : {}),
   ...(isGithubPages ? { basePath: "/tanluc" } : {}),
 };
 
