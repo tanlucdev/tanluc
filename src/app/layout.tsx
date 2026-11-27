@@ -31,7 +31,7 @@ export default function RootLayout({
         <Soundscape />
         <Nav />
         <main className="flex-1">{children}</main>
-        <Analytics />
+        {process.env.GITHUB_PAGES !== "true" && <Analytics />}
       </body>
     </html>
   );
